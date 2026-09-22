@@ -1,0 +1,262 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #0B0B0C;
+  --color-onyx: #141416;
+  --color-char: #1E1F22;
+  --color-cream: #F4EFE4;
+  --color-paper: #FBF8F1;
+
+  --color-gold: #C9A227;
+  --color-gold-lt: #EAD79C;
+  --color-gold-dk: #7E611D;
+  --color-gold-mid: #B08D2A;
+
+  --color-ox: #5C1220;
+  --color-ox-dk: #37070F;
+  --color-silver: #C6C8CC;
+  --color-bronze: #9A6634;
+
+  --color-ok: #2F6B4F;
+  --color-warn: #8A6A20;
+  --color-bad: #8C2130;
+
+  --font-display: 'Cinzel', 'Optima', 'Palatino Linotype', Georgia, serif;
+  --font-serif: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --font-sans: ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  /* the original design's own breakpoint for switching from the mobile
+     bottom nav to the desktop header nav — not one of Tailwind's defaults */
+  --breakpoint-desk: 900px;
+}
+
+@layer base {
+  html,
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    min-height: 100%;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---- shared decorative / typography primitives, reused across screens --- */
+
+@layer components {
+  .ff-lattice {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='58' height='42'><text x='0' y='30' font-family='Georgia,serif' font-style='italic' font-size='26' fill='%23C9A227' fill-opacity='0.055'>FF</text></svg>");
+  }
+
+  .ff-display {
+    @apply font-display font-medium tracking-[0.04em];
+  }
+
+  .ff-metal {
+    @apply bg-clip-text text-transparent;
+  }
+
+  .ff-serif {
+    @apply font-serif;
+  }
+
+  .ff-label {
+    @apply text-[10px] font-semibold uppercase tracking-[0.18em] text-gold-dk;
+  }
+
+  .ff-eyebrow {
+    @apply font-display text-[11px] uppercase tracking-[0.3em] text-gold-mid;
+  }
+
+  .ff-h1 {
+    @apply m-0 font-display text-[26px] leading-[1.15] tracking-[0.05em];
+  }
+
+  .ff-h2 {
+    @apply m-0 font-display text-lg tracking-[0.07em];
+  }
+
+  .ff-lede {
+    @apply font-serif text-[17px] leading-normal text-[#4A443A] italic;
+  }
+
+  .ff-body {
+    @apply text-sm leading-[1.55] text-[#46413A];
+  }
+
+  .ff-muted {
+    @apply text-[#7C766B];
+  }
+
+  .ff-rule {
+    @apply m-0 h-px border-0 bg-gold-dk/30;
+  }
+
+  /* progress track, used by the header XP indicator and the XP screen */
+  .ff-xptrack {
+    @apply relative h-1.5 flex-1 overflow-hidden bg-white/10;
+  }
+
+  .ff-xpfill {
+    @apply absolute inset-y-0 left-0 h-full bg-gradient-to-r from-gold-dk to-gold transition-[width] duration-500 ease-out;
+  }
+
+  /* ---- app shell layout -------------------------------------------------- */
+
+  .ff-shell {
+    @apply flex min-h-screen flex-col;
+  }
+
+  .ff-main {
+    @apply mx-auto w-full max-w-[1180px] flex-1 px-4 pt-[18px] pb-[150px] desk:pb-12;
+  }
+
+  /* ---- framed panels (hero panels, info boxes) --------------------------- */
+
+  .ff-frame {
+    @apply relative border border-gold-dk bg-paper;
+  }
+
+  .ff-frame::after {
+    content: '';
+    @apply pointer-events-none absolute inset-1 border border-gold/42;
+  }
+
+  .ff-corner {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border-color: var(--color-gold);
+    border-style: solid;
+    border-width: 0;
+  }
+  .ff-corner.tl { top: 8px; left: 8px; border-top-width: 1.5px; border-left-width: 1.5px; }
+  .ff-corner.tr { top: 8px; right: 8px; border-top-width: 1.5px; border-right-width: 1.5px; }
+  .ff-corner.bl { bottom: 8px; left: 8px; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+  .ff-corner.br { bottom: 8px; right: 8px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+  /* ---- card frame (the FireFlair ID-card itself) -------------------------- */
+
+  .ff-deck {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid transparent;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .38), 0 2px 6px rgba(0, 0, 0, .30);
+  }
+  .ff-deck .fx { position: absolute; inset: 0; pointer-events: none; z-index: -1; }
+  .ff-deck .fx.sheen {
+    background:
+      radial-gradient(118% 62% at 50% -14%, rgba(255, 255, 255, .12), transparent 62%),
+      radial-gradient(145% 105% at 50% 120%, rgba(0, 0, 0, .45), transparent 58%);
+  }
+  .ff-deck .fx.grain {
+    opacity: .55;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='7'><path d='M0 7 L7 0' stroke='%23C9A227' stroke-opacity='0.055' stroke-width='1'/></svg>");
+  }
+  .ff-deck .fx.hair { inset: 4px; border: 1px solid var(--deck-hair, rgba(201, 162, 39, .38)); }
+  .ff-deck .fx.hair::after { content: ''; position: absolute; inset: 2px; border: 1px solid rgba(255, 255, 255, .045); }
+  .ff-deck.lite { box-shadow: 0 10px 24px rgba(48, 36, 10, .16), 0 1px 3px rgba(48, 36, 10, .12); }
+  .ff-deck.lite .fx.sheen {
+    background:
+      radial-gradient(118% 62% at 50% -14%, rgba(255, 255, 255, .85), transparent 60%),
+      radial-gradient(145% 105% at 50% 122%, rgba(120, 92, 28, .16), transparent 58%);
+  }
+  .ff-deck.lite .fx.grain { opacity: .35; }
+  .ff-sel { box-shadow: 0 0 0 2px var(--color-gold), 0 0 22px rgba(201, 162, 39, .35); }
+
+  /* text typed directly onto a card */
+  .ff-cardin {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(201, 162, 39, .45);
+    padding: 3px 0;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    outline: none;
+  }
+  .ff-cardin::placeholder { opacity: .45; }
+  .ff-cardin:focus { border-bottom-color: var(--color-gold); }
+
+  .ff-tagchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border: 1px solid rgba(201, 162, 39, .5);
+    font-size: 11px;
+    font-family: var(--font-serif);
+  }
+
+  /* ---- buttons ------------------------------------------------------------ */
+
+  .ff-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 20px;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 1px solid var(--color-gold-mid);
+    color: #3B342A;
+    background: linear-gradient(180deg, rgba(201, 162, 39, .13), rgba(201, 162, 39, .06));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35);
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .ff-btn:hover { background: linear-gradient(180deg, rgba(201, 162, 39, .24), rgba(201, 162, 39, .13)); border-color: var(--color-gold); }
+  .ff-btn:disabled { opacity: .45; cursor: not-allowed; }
+  .ff-btn.primary { background: linear-gradient(175deg, #1B1B1E, #0A0A0B); color: var(--color-gold-lt); border-color: var(--color-gold-dk); }
+  .ff-btn.primary:hover { background: linear-gradient(175deg, #26262A, #121214); }
+  .ff-btn.ghost { border-color: rgba(126, 97, 29, .55); background: rgba(201, 162, 39, .05); color: #4C463C; box-shadow: none; }
+  .ff-btn.onDark { border-color: var(--color-gold); color: var(--color-gold-lt); background: rgba(201, 162, 39, .12); box-shadow: none; }
+  .ff-btn.onDark:hover { background: rgba(201, 162, 39, .24); }
+  .ff-btn.danger { border-color: rgba(140, 33, 48, .55); color: var(--color-bad); background: rgba(140, 33, 48, .06); box-shadow: none; }
+  .ff-btn.wide { width: 100%; }
+  .ff-btn.sm { padding: 9px 12px; font-size: 10px; letter-spacing: .12em; }
+
+  /* ---- form inputs (off-card) ---------------------------------------------- */
+
+  .ff-input {
+    width: 100%;
+    padding: 13px 14px;
+    background: #fff;
+    border: 1px solid rgba(126, 97, 29, .30);
+    color: var(--color-ink);
+    font-size: 16px;
+    font-family: var(--font-sans);
+  }
+  .ff-input:focus { border-color: var(--color-gold); outline: none; }
+  .ff-input::placeholder { color: #A9A296; }
+}
+
+@keyframes ffup {
+  from { transform: translateY(14px); opacity: .6; }
+  to { transform: none; opacity: 1; }
+}
