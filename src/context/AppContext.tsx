@@ -41,7 +41,6 @@ function initState(): AppState {
     role: "team",
     profile: loadStoredProfile(),
     selection: [],
-    toast: null,
   };
 }
 
@@ -49,8 +48,6 @@ function reducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case "ROLE":
       return { ...state, role: action.role };
-    case "TOAST":
-      return { ...state, toast: action.toast };
     case "SELECT": {
       const on = state.selection.includes(action.id);
       return {
@@ -70,7 +67,6 @@ function reducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         profile: { ...state.profile, cardSaved: true },
-        toast: "Card saved - add a phone or email to finish.",
       };
     case "RESET_CARD":
       return {
@@ -97,7 +93,6 @@ function reducer(state: AppState, action: AppAction): AppState {
           accountCreated: true,
           live: true,
         },
-        toast: "Your FireFlair card is live.",
       };
     case "ANSWER": {
       const existing = state.profile.answers[action.qid];
@@ -121,7 +116,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Keep the in-progress (or finished) card in localStorage so a reload never
   // loses what someone has typed - only the profile draft persists, not the
-  // ephemeral UI state (role/tab/selection/toast).
+  // ephemeral UI state (role/tab/selection).
   useEffect(() => {
     try {
       window.localStorage.setItem(

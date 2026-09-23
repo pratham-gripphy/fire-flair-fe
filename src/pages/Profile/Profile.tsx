@@ -4,6 +4,7 @@ import { useStore } from "../../hooks/useStore";
 import { useGoTab } from "../../hooks/useGoTab";
 import { Button } from "../../components/common/Button";
 import { Empty } from "../../components/common/Empty";
+import { Notice } from "../../components/common/Notice";
 import { Pill } from "../../components/common/Pill";
 import { SectionHead } from "../../components/common/SectionHead";
 import { EditableProfileCard } from "../../components/card/EditableProfileCard";
@@ -30,6 +31,7 @@ export function Profile() {
 
   const [editing, setEditing] = useState(false);
   const [editDraft, setEditDraft] = useState<ProfileDraft | null>(null);
+  const [notice, setNotice] = useState<{ tone: "ok" | "bad"; text: string } | null>(null);
 
   const startEditing = () => {
     setEditDraft(draftOf(profile));
@@ -45,7 +47,7 @@ export function Profile() {
     if (editDraft) dispatch({ type: "PROFILE_PATCH", patch: editDraft });
     setEditDraft(null);
     setEditing(false);
-    dispatch({ type: "TOAST", toast: "Card updated." });
+    setNotice({ tone: "ok", text: "Card updated." });
   };
 
   const shareCard = async () => {
@@ -64,11 +66,11 @@ export function Profile() {
     }
     try {
       await navigator.clipboard.writeText(shareData.url);
-      dispatch({ type: "TOAST", toast: "Card link copied to clipboard." });
+      setNotice({ tone: "ok", text: "Card link copied to clipboard." });
     } catch {
-      dispatch({
-        type: "TOAST",
-        toast: "Could not copy the link - copy it from the address bar.",
+      setNotice({
+        tone: "bad",
+        text: "Could not copy the link - copy it from the address bar.",
       });
     }
   };
@@ -128,6 +130,16 @@ export function Profile() {
       <div className="ff-page-narrow">
         <div className="ff-eyebrow">{eyebrow}</div>
         <h1 className="ff-h1 mt-1 mb-3.5">Your card</h1>
+
+        {notice && (
+          <Notice
+            tone={notice.tone}
+            className="mb-3.5"
+            onDismiss={() => setNotice(null)}
+          >
+            {notice.text}
+          </Notice>
+        )}
 
         <ProfileCardView
           profile={profile}

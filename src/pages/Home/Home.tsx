@@ -7,6 +7,8 @@ import { Wordmark } from "../../components/common/Wordmark";
 import { Corners } from "../../components/common/Corners";
 import { Button } from "../../components/common/Button";
 import { Field } from "../../components/common/Field";
+import { FieldError } from "../../components/common/FieldError";
+import { Notice } from "../../components/common/Notice";
 import { PhoneInput } from "../../components/common/PhoneInput";
 import { EditableProfileCard } from "../../components/card/EditableProfileCard";
 import { ProfileCardLandscape } from "../../components/card/ProfileCardLandscape";
@@ -24,6 +26,7 @@ export function Home() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState<string | null>(null);
+  const [justActivated, setJustActivated] = useState(false);
 
   const updateDraft = (patch: Partial<ProfileDraft>) =>
     dispatch({ type: "PROFILE_PATCH", patch });
@@ -42,7 +45,6 @@ export function Home() {
     setOtpSent(true);
     setOtp("");
     setOtpError(null);
-    dispatch({ type: "TOAST", toast: "Code sent - use 1234 for now." });
   };
 
   const changeNumber = () => {
@@ -56,6 +58,7 @@ export function Home() {
       setOtpError("That code's wrong - try 1234.");
       return;
     }
+    setJustActivated(true);
     dispatch({ type: "CREATE_ACCOUNT", phone: fullPhone });
   };
 
@@ -107,6 +110,12 @@ export function Home() {
           {state.role === "staff" ? "FF Staff" : "FF Team"}
         </div>
         <h1 className="ff-h1 mt-1 mb-3.5">Hello, {firstName}</h1>
+
+        {justActivated && (
+          <Notice className="mb-3.5" onDismiss={() => setJustActivated(false)}>
+            Your FireFlair card is live.
+          </Notice>
+        )}
 
         <ProfileCardLandscape
           profile={profile}
@@ -216,10 +225,9 @@ export function Home() {
                     onCountryChange={setCountry}
                     number={phone}
                     onNumberChange={setPhone}
+                    invalid={!!phoneError}
                   />
-                  {phoneError && (
-                    <p className="text-bad mt-1.5 text-xs">{phoneError}</p>
-                  )}
+                  {phoneError && <FieldError>{phoneError}</FieldError>}
                 </Field>
 
                 <Button
@@ -237,7 +245,7 @@ export function Home() {
                   hint={`Sent to ${fullPhone}. (Use 1234 for now.)`}
                 >
                   <input
-                    className="ff-input"
+                    className={`ff-input ${otpError ? "border-bad/50" : ""}`}
                     type="text"
                     inputMode="numeric"
                     maxLength={4}
@@ -247,10 +255,9 @@ export function Home() {
                       setOtp(e.target.value.replace(/\D/g, "").slice(0, 4));
                       setOtpError(null);
                     }}
+                    aria-invalid={!!otpError}
                   />
-                  {otpError && (
-                    <p className="text-bad mt-1.5 text-xs">{otpError}</p>
-                  )}
+                  {otpError && <FieldError>{otpError}</FieldError>}
                 </Field>
 
                 <Button

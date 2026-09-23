@@ -2,10 +2,12 @@ import { useState } from "react";
 import { LogIn } from "lucide-react";
 import { Sheet } from "../../common/Sheet";
 import { Field } from "../../common/Field";
+import { FieldError } from "../../common/FieldError";
 import { Button } from "../../common/Button";
 import { Pill } from "../../common/Pill";
 import { Corners } from "../../common/Corners";
 import { Coin } from "../../common/Coin";
+import { Notice } from "../../common/Notice";
 import { PhoneInput } from "../../common/PhoneInput";
 import { useStore } from "../../../hooks/useStore";
 import { xpProgress } from "../../../constants/xp";
@@ -20,12 +22,13 @@ interface XPModalProps {
 /** Opened from the header's XP button. A phone + OTP login for an existing
  *  account sits above the XP preview, since XP itself isn't live yet. */
 export function XPModal({ open, onClose }: XPModalProps) {
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
   const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
   const [phone, setPhone] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState<string | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const xpInfo = xpProgress(state.profile.xp);
   const phoneReady = isValidPhone(phone, country);
@@ -36,13 +39,13 @@ export function XPModal({ open, onClose }: XPModalProps) {
     setOtpSent(true);
     setOtp("");
     setOtpError(null);
-    dispatch({ type: "TOAST", toast: "Code sent - use 1234 for now." });
   };
 
   const changeNumber = () => {
     setOtpSent(false);
     setOtp("");
     setOtpError(null);
+    setLoggedIn(false);
   };
 
   const login = () => {
@@ -50,7 +53,7 @@ export function XPModal({ open, onClose }: XPModalProps) {
       setOtpError("That code's wrong - try 1234.");
       return;
     }
-    dispatch({ type: "TOAST", toast: "Account login is coming soon." });
+    setLoggedIn(true);
   };
 
   return (
@@ -65,10 +68,9 @@ export function XPModal({ open, onClose }: XPModalProps) {
               onCountryChange={setCountry}
               number={phone}
               onNumberChange={setPhone}
+              invalid={!!phoneError}
             />
-            {phoneError && (
-              <p className="text-bad mt-1.5 text-xs">{phoneError}</p>
-            )}
+            {phoneError && <FieldError>{phoneError}</FieldError>}
           </Field>
 
           <Button
@@ -86,7 +88,7 @@ export function XPModal({ open, onClose }: XPModalProps) {
             hint={`Sent to ${fullPhone}. (Use 1234 for now.)`}
           >
             <input
-              className="ff-input"
+              className={`ff-input ${otpError ? "border-bad/50" : ""}`}
               type="text"
               inputMode="numeric"
               maxLength={4}
@@ -96,8 +98,9 @@ export function XPModal({ open, onClose }: XPModalProps) {
                 setOtp(e.target.value.replace(/\D/g, "").slice(0, 4));
                 setOtpError(null);
               }}
+              aria-invalid={!!otpError}
             />
-            {otpError && <p className="text-bad mt-1.5 text-xs">{otpError}</p>}
+            {otpError && <FieldError>{otpError}</FieldError>}
           </Field>
 
           <Button
@@ -114,6 +117,12 @@ export function XPModal({ open, onClose }: XPModalProps) {
           >
             Change number
           </button>
+
+          {loggedIn && (
+            <Notice className="mt-3.5" onDismiss={() => setLoggedIn(false)}>
+              Account login is coming soon.
+            </Notice>
+          )}
         </>
       )}
 

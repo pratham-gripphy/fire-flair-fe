@@ -39,12 +39,10 @@ export interface AppState {
   role: Role;
   profile: Profile;
   selection: string[];
-  toast: string | null;
 }
 
 export type AppAction =
   | { type: 'ROLE'; role: Exclude<Role, null> }
-  | { type: 'TOAST'; toast: string | null }
   | { type: 'SELECT'; id: string }
   | { type: 'CLEAR_SELECTION' }
   | { type: 'PROFILE_PATCH'; patch: Partial<Profile> }

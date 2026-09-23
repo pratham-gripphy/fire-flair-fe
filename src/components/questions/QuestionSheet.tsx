@@ -51,14 +51,9 @@ export function QuestionSheet({ open, question, onClose }: QuestionSheetProps) {
   if (!open || !question) return null;
 
   const existing = state.profile.answers[question.id];
-  const isNew = existing === undefined || existing === "";
 
   const save = (v: string) => {
     dispatch({ type: "ANSWER", qid: question.id, value: v });
-    dispatch({
-      type: "TOAST",
-      toast: isNew ? "Answered · +1 XP" : "Answer updated",
-    });
     onClose();
   };
 

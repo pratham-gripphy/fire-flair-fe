@@ -3,6 +3,8 @@ import { Award, Check, Mic } from "lucide-react";
 import { Logo } from "../common/Logo";
 import { Corners } from "../common/Corners";
 import { Button } from "../common/Button";
+import { FieldError } from "../common/FieldError";
+import { Notice } from "../common/Notice";
 import { useStore } from "../../hooks/useStore";
 import {
   proposeAnswersFromText,
@@ -47,6 +49,8 @@ export function AIProfileCompletion() {
   const [proposals, setProposals] = useState<AnswerProposal[] | null>(null);
   const [picked, setPicked] = useState<Record<string, boolean>>({});
   const [listening, setListening] = useState(false);
+  const [micError, setMicError] = useState<string | null>(null);
+  const [confirmedCount, setConfirmedCount] = useState<number | null>(null);
   const recogRef = useRef<SpeechRecognitionLike | null>(null);
 
   const questionFor = (qid: string) => QUESTIONS.find((q) => q.id === qid);
@@ -69,10 +73,7 @@ export function AIProfileCompletion() {
     chosen.forEach((p) =>
       dispatch({ type: "ANSWER", qid: p.qid, value: p.value }),
     );
-    dispatch({
-      type: "TOAST",
-      toast: `${chosen.length} question${chosen.length === 1 ? "" : "s"} answered · +${chosen.length} XP`,
-    });
+    setConfirmedCount(chosen.length);
     setProposals(null);
     setText("");
     setPicked({});
@@ -81,12 +82,10 @@ export function AIProfileCompletion() {
   const toggleMic = () => {
     const Ctor = getSpeechRecognitionCtor();
     if (!Ctor) {
-      dispatch({
-        type: "TOAST",
-        toast: "Voice input isn't available in this browser.",
-      });
+      setMicError("Voice input isn't available in this browser.");
       return;
     }
+    setMicError(null);
     if (listening) {
       recogRef.current?.stop();
       return;
@@ -123,13 +122,23 @@ export function AIProfileCompletion() {
 
       {proposals === null ? (
         <>
+          {confirmedCount !== null && (
+            <Notice className="mb-2.5" onDismiss={() => setConfirmedCount(null)}>
+              {confirmedCount} question{confirmedCount === 1 ? "" : "s"} answered · +
+              {confirmedCount} XP
+            </Notice>
+          )}
+
           <div className="relative">
             <textarea
               className="ff-input pr-11"
               rows={4}
               placeholder="Tell us about yourself - your experience, kit, availability, where you're based…"
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setText(e.target.value);
+                setConfirmedCount(null);
+              }}
             />
             <button
               onClick={toggleMic}
@@ -142,6 +151,7 @@ export function AIProfileCompletion() {
               <Mic size={18} />
             </button>
           </div>
+          {micError && <FieldError>{micError}</FieldError>}
 
           <button
             type="button"

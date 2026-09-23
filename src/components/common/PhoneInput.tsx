@@ -9,6 +9,7 @@ interface PhoneInputProps {
   number: string;
   onNumberChange: (value: string) => void;
   placeholder?: string;
+  invalid?: boolean;
 }
 
 type FlagComponent = (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
@@ -40,6 +41,7 @@ export function PhoneInput({
   number,
   onNumberChange,
   placeholder = "7700 900000",
+  invalid = false,
 }: PhoneInputProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -90,7 +92,9 @@ export function PhoneInput({
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-label="Choose country code"
-          className="border-gold-dk/30 hover:bg-gold/8 flex h-full cursor-pointer items-center gap-1.5 border bg-white px-2.5 py-[13px] text-[15px] text-ink"
+          className={`hover:bg-gold/8 flex h-full cursor-pointer items-center gap-1.5 border bg-white px-2.5 py-[13px] text-[15px] text-ink ${
+            invalid ? "border-bad/50" : "border-gold-dk/30"
+          }`}
         >
           <Flag code={country.code} className="aspect-[3/2] w-5 shrink-0 rounded-[1px]" />
           <span>{country.dial}</span>
@@ -155,12 +159,13 @@ export function PhoneInput({
       </div>
 
       <input
-        className="ff-input"
+        className={`ff-input ${invalid ? "border-bad/50" : ""}`}
         type="tel"
         inputMode="numeric"
         placeholder={placeholder}
         value={number}
         onChange={(e) => onNumberChange(e.target.value.replace(/\D/g, ""))}
+        aria-invalid={invalid}
       />
     </div>
   );
