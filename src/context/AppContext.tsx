@@ -94,7 +94,6 @@ function reducer(state: AppState, action: AppAction): AppState {
         profile: {
           ...state.profile,
           phone: action.phone,
-          email: action.email,
           accountCreated: true,
           live: true,
         },

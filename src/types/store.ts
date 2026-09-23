@@ -51,5 +51,5 @@ export type AppAction =
   | { type: 'START_BUILDING' }
   | { type: 'SAVE_CARD' }
   | { type: 'RESET_CARD' }
-  | { type: 'CREATE_ACCOUNT'; phone: string; email: string }
+  | { type: 'CREATE_ACCOUNT'; phone: string }
   | { type: 'ANSWER'; qid: string; value: string };

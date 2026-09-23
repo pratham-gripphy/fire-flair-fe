@@ -1,13 +1,5 @@
 import { useState } from "react";
-import {
-  Award,
-  Calendar,
-  ChevronRight,
-  Mail,
-  Phone,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { ChevronRight, ShieldCheck, Sparkles } from "lucide-react";
 import { useStore } from "../../hooks/useStore";
 import { useGoTab } from "../../hooks/useGoTab";
 import { Logo } from "../../components/common/Logo";
@@ -15,22 +7,23 @@ import { Wordmark } from "../../components/common/Wordmark";
 import { Corners } from "../../components/common/Corners";
 import { Button } from "../../components/common/Button";
 import { Field } from "../../components/common/Field";
+import { PhoneInput } from "../../components/common/PhoneInput";
 import { EditableProfileCard } from "../../components/card/EditableProfileCard";
 import { ProfileCardLandscape } from "../../components/card/ProfileCardLandscape";
-import { FeedSection } from "../../components/feed/FeedSection";
-import { FEED } from "../../constants/feed";
 import type { ProfileDraft } from "../../types/store";
-
-const isValidEmail = (value: string) => /\S+@\S+\.\S+/.test(value);
-const isValidPhone = (value: string) => value.replace(/\D/g, "").length >= 9;
+import { isValidPhone, phoneErrorMessage, STATIC_OTP } from "../../utils/otp";
+import { DEFAULT_COUNTRY, type Country } from "../../constants/countries";
 
 export function Home() {
   const { state, dispatch } = useStore();
   const { profile } = state;
   const goTab = useGoTab();
 
+  const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
   const [phone, setPhone] = useState(profile.phone);
-  const [email, setEmail] = useState(profile.email);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState<string | null>(null);
 
   const updateDraft = (patch: Partial<ProfileDraft>) =>
     dispatch({ type: "PROFILE_PATCH", patch });
@@ -41,14 +34,29 @@ export function Home() {
   const awaitingSave =
     cardReady && !profile.cardSaved && !profile.accountCreated;
   const awaitingContact = profile.cardSaved && !profile.accountCreated;
-  const contactReady = isValidPhone(phone) || isValidEmail(email);
+  const phoneReady = isValidPhone(phone, country);
+  const phoneError = phone.trim() ? phoneErrorMessage(phone, country) : null;
+  const fullPhone = `${country.dial} ${phone.trim()}`;
 
-  const createAccount = () => {
-    dispatch({
-      type: "CREATE_ACCOUNT",
-      phone: phone.trim(),
-      email: email.trim(),
-    });
+  const sendCode = () => {
+    setOtpSent(true);
+    setOtp("");
+    setOtpError(null);
+    dispatch({ type: "TOAST", toast: "Code sent - use 1234 for now." });
+  };
+
+  const changeNumber = () => {
+    setOtpSent(false);
+    setOtp("");
+    setOtpError(null);
+  };
+
+  const verifyAndCreateAccount = () => {
+    if (otp.trim() !== STATIC_OTP) {
+      setOtpError("That code's wrong - try 1234.");
+      return;
+    }
+    dispatch({ type: "CREATE_ACCOUNT", phone: fullPhone });
   };
 
   if (!started) {
@@ -144,36 +152,6 @@ export function Home() {
             </div>
           </div>
         )}
-
-        <FeedSection
-          title="Events"
-          icon={
-            <Calendar size={15} className="text-gold-dk" strokeWidth={1.6} />
-          }
-          items={FEED.events}
-          kind="Event"
-          actionLabel="See event"
-          onAction={(i) =>
-            dispatch({
-              type: "TOAST",
-              toast: `${i.title} - ${i.when}, ${i.where}`,
-            })
-          }
-        />
-
-        <FeedSection
-          title="Training"
-          icon={<Award size={15} className="text-gold-dk" strokeWidth={1.6} />}
-          items={FEED.training}
-          kind="Training"
-          actionLabel="Sign up"
-          onAction={(i) =>
-            dispatch({
-              type: "TOAST",
-              toast: `Registered interest - ${i.title}`,
-            })
-          }
-        />
       </div>
     );
   }
@@ -220,50 +198,77 @@ export function Home() {
             <div className="ff-rule mb-5" />
             <h2 className="ff-h2 text-center">Almost there</h2>
             <p className="ff-body ff-muted mt-1 mb-4 text-center">
-              Your card is saved. Add a phone number or an email to create your
-              account.
+              Your card is saved. Add a phone number to create your account.
             </p>
 
-            <Field
-              label="Mobile number"
-              hint="We only use this to save and secure your account."
-            >
-              <div className="flex items-center gap-2">
-                <Phone size={15} className="text-gold-dk shrink-0" />
-                <input
-                  className="ff-input"
-                  type="tel"
-                  placeholder="+44 7700 900000"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-              </div>
-            </Field>
+            {!otpSent ? (
+              <>
+                <Field
+                  label="Mobile number"
+                  hint={
+                    phoneError
+                      ? undefined
+                      : "We only use this to save and secure your account."
+                  }
+                >
+                  <PhoneInput
+                    country={country}
+                    onCountryChange={setCountry}
+                    number={phone}
+                    onNumberChange={setPhone}
+                  />
+                  {phoneError && (
+                    <p className="text-bad mt-1.5 text-xs">{phoneError}</p>
+                  )}
+                </Field>
 
-            <div className="ff-body ff-muted mb-4 text-center text-xs tracking-[0.2em] uppercase">
-              or
-            </div>
+                <Button
+                  variant="primary wide"
+                  disabled={!phoneReady}
+                  onClick={sendCode}
+                >
+                  Send code
+                </Button>
+              </>
+            ) : (
+              <>
+                <Field
+                  label="Verification code"
+                  hint={`Sent to ${fullPhone}. (Use 1234 for now.)`}
+                >
+                  <input
+                    className="ff-input"
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={4}
+                    placeholder="1234"
+                    value={otp}
+                    onChange={(e) => {
+                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 4));
+                      setOtpError(null);
+                    }}
+                  />
+                  {otpError && (
+                    <p className="text-bad mt-1.5 text-xs">{otpError}</p>
+                  )}
+                </Field>
 
-            <Field label="Email address">
-              <div className="flex items-center gap-2">
-                <Mail size={15} className="text-gold-dk shrink-0" />
-                <input
-                  className="ff-input"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </Field>
+                <Button
+                  variant="primary wide"
+                  disabled={otp.trim().length !== 4}
+                  onClick={verifyAndCreateAccount}
+                >
+                  <ShieldCheck size={15} /> Verify &amp; create account
+                </Button>
 
-            <Button
-              variant="primary wide"
-              disabled={!contactReady}
-              onClick={createAccount}
-            >
-              <ShieldCheck size={15} /> Create my account
-            </Button>
+                <button
+                  className="ff-body ff-muted mt-3 w-full text-center text-xs tracking-[0.1em] uppercase underline underline-offset-2"
+                  onClick={changeNumber}
+                >
+                  Change number
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
