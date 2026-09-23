@@ -37,8 +37,6 @@ export interface Profile extends ProfileDraft {
 
 export interface AppState {
   role: Role;
-  tab: Tab;
-  route: string;
   profile: Profile;
   selection: string[];
   toast: string | null;
@@ -46,8 +44,6 @@ export interface AppState {
 
 export type AppAction =
   | { type: 'ROLE'; role: Exclude<Role, null> }
-  | { type: 'TAB'; tab: Tab; route?: string }
-  | { type: 'GO'; route: string }
   | { type: 'TOAST'; toast: string | null }
   | { type: 'SELECT'; id: string }
   | { type: 'CLEAR_SELECTION' }

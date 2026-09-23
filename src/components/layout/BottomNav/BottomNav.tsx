@@ -1,6 +1,7 @@
 import { NAV } from "../../../constants/nav";
 import { useStore } from "../../../hooks/useStore";
 import { useGoTab } from "../../../hooks/useGoTab";
+import { useActiveTab } from "../../../hooks/useActiveTab";
 import { Logo } from "../../common/Logo";
 import { NavMark } from "../../common/NavMark";
 import type { Tab } from "../../../types/store";
@@ -10,6 +11,7 @@ import type { Tab } from "../../../types/store";
 export function BottomNav() {
   const { state } = useStore();
   const goTab = useGoTab();
+  const activeTab = useActiveTab();
 
   return (
     <nav className="ff-lattice fixed inset-x-0 bottom-0 z-50 border-t border-gold bg-gradient-to-b from-[#2A2A2F] to-[#121214] pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-6px_22px_rgba(0,0,0,.45)] desk:hidden">
@@ -38,9 +40,9 @@ export function BottomNav() {
               <NavMark
                 shape={n.mark!}
                 size={23}
-                tone={state.tab === n.key ? "#EAD79C" : "#D8D6D0"}
+                tone={activeTab === n.key ? "#EAD79C" : "#D8D6D0"}
               />
-              {state.tab === n.key && (
+              {activeTab === n.key && (
                 <span className="bg-gold absolute top-0 left-1/2 h-0.5 w-6 -translate-x-1/2" />
               )}
             </button>

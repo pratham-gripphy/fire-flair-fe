@@ -39,8 +39,6 @@ function loadStoredProfile(): Profile {
 function initState(): AppState {
   return {
     role: "team",
-    tab: "home",
-    route: "entry",
     profile: loadStoredProfile(),
     selection: [],
     toast: null,
@@ -50,11 +48,7 @@ function initState(): AppState {
 function reducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case "ROLE":
-      return { ...state, role: action.role, tab: "home" };
-    case "TAB":
-      return { ...state, tab: action.tab, route: action.route ?? state.route };
-    case "GO":
-      return { ...state, route: action.route };
+      return { ...state, role: action.role };
     case "TOAST":
       return { ...state, toast: action.toast };
     case "SELECT": {

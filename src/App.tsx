@@ -1,25 +1,11 @@
-import { AppProvider } from './context/AppContext';
-import { useStore } from './hooks/useStore';
-import { Header } from './components/layout/Header';
-import { BottomNav } from './components/layout/BottomNav';
-import { Home } from './pages/Home';
-import { Profile } from './pages/Profile';
-import { Network } from './pages/Network';
-import { Bookings } from './pages/Bookings';
-
-function AppRoutes() {
-  const { state } = useStore();
-  switch (state.tab) {
-    case 'profile':
-      return <Profile />;
-    case 'network':
-      return <Network />;
-    case 'bookings':
-      return <Bookings />;
-    default:
-      return <Home />;
-  }
-}
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AppProvider } from "./context/AppContext";
+import { Header } from "./components/layout/Header";
+import { BottomNav } from "./components/layout/BottomNav";
+import { Home } from "./pages/Home";
+import { Profile } from "./pages/Profile";
+import { Network } from "./pages/Network";
+import { Bookings } from "./pages/Bookings";
 
 function App() {
   return (
@@ -27,7 +13,14 @@ function App() {
       <div className="ff-shell">
         <Header />
         <main className="ff-main">
-          <AppRoutes />
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/network" element={<Network />} />
+            <Route path="/bookings" element={<Bookings />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Routes>
         </main>
         <BottomNav />
       </div>

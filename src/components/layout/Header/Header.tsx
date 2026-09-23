@@ -1,5 +1,6 @@
 import { useStore } from "../../../hooks/useStore";
 import { useGoTab } from "../../../hooks/useGoTab";
+import { useActiveTab } from "../../../hooks/useActiveTab";
 import { xpProgress } from "../../../constants/xp";
 import { NAV } from "../../../constants/nav";
 import type { Tab } from "../../../types/store";
@@ -22,6 +23,7 @@ export function Header({ onAdd, onShare, onXP }: HeaderProps) {
   const isTeam = state.role === "team";
   const isStaff = state.role === "staff";
   const goTab = useGoTab();
+  const activeTab = useActiveTab();
 
   const basket = isStaff && state.selection.length > 0;
   const xpInfo =
@@ -44,7 +46,7 @@ export function Header({ onAdd, onShare, onXP }: HeaderProps) {
               <button
                 key={n.key}
                 className={`text-[11px] tracking-[0.16em] uppercase desk:border-l desk:border-gold/22 desk:px-3.5 desk:py-2.5 ${
-                  state.tab === n.key ? "text-gold-lt" : "text-cream/72"
+                  activeTab === n.key ? "text-gold-lt" : "text-cream/72"
                 }`}
                 onClick={() => goTab(n.key as Tab)}
               >
@@ -121,9 +123,7 @@ export function Header({ onAdd, onShare, onXP }: HeaderProps) {
                 Clear
               </button>
               <button
-                onClick={() =>
-                  dispatch({ type: "TAB", tab: "home", route: "shiftNew" })
-                }
+                onClick={() => goTab("home")}
                 className="border border-gold px-3 py-[7px] text-[10px] tracking-[0.1em] text-gold-lt uppercase"
               >
                 Build team
