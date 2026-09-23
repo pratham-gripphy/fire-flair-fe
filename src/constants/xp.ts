@@ -6,7 +6,7 @@ interface XPLevel {
   label: string;
 }
 
-/** Bronze and Silver are fixed thresholds; Gold is not a number — it's
+/** Bronze and Silver are fixed thresholds; Gold is not a number - it's
  *  awarded to the quarter's top performers, so it never comes from xp alone. */
 export const XP_LEVELS: XPLevel[] = [
   { tier: 'bronze', xp: 100, label: 'Bronze' },

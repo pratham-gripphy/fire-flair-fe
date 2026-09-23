@@ -25,11 +25,14 @@ export interface Profile extends ProfileDraft {
   xp: number;
   phone: string;
   email: string;
-  /** User has clicked "Build my card" — shows the editable card instead of the CTA. */
+  /** User has clicked "Build my card" - shows the editable card instead of the CTA. */
   started: boolean;
-  /** User has clicked "Save card" on a completed card — reveals the contact fields. */
+  /** User has clicked "Save card" on a completed card - reveals the contact fields. */
   cardSaved: boolean;
   accountCreated: boolean;
+  /** Answers to Question Cards, keyed by question id. Internal profile data -
+   *  never shown on the public card. */
+  answers: Record<string, string>;
 }
 
 export interface AppState {
@@ -52,4 +55,5 @@ export type AppAction =
   | { type: 'START_BUILDING' }
   | { type: 'SAVE_CARD' }
   | { type: 'RESET_CARD' }
-  | { type: 'CREATE_ACCOUNT'; phone: string; email: string };
+  | { type: 'CREATE_ACCOUNT'; phone: string; email: string }
+  | { type: 'ANSWER'; qid: string; value: string };

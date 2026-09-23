@@ -1,16 +1,16 @@
-import { Pencil, Share2 } from 'lucide-react';
-import { CardFrame } from '../common/CardFrame';
-import { Coin } from '../common/Coin';
-import { Portrait } from '../common/Portrait';
-import { Level } from '../common/Level';
-import { CardRule } from '../common/CardRule';
-import { CardMeta } from '../common/CardMeta';
-import { CardFoot } from '../common/CardFoot';
-import { CatIcon, type CatKind } from '../common/CatIcon';
-import { Button } from '../common/Button';
-import { flagFor } from '../../constants/languages';
-import { CARD_DOMAIN, THEMES, TIERS } from '../../constants/theme';
-import type { Profile } from '../../types/store';
+import { Pencil, Share2 } from "lucide-react";
+import { CardFrame } from "../common/CardFrame";
+import { Logo } from "../common/Logo";
+import { Portrait } from "../common/Portrait";
+import { Level } from "../common/Level";
+import { CardRule } from "../common/CardRule";
+import { CardMeta } from "../common/CardMeta";
+import { CardFoot } from "../common/CardFoot";
+import { CatIcon, type CatKind } from "../common/CatIcon";
+import { Button } from "../common/Button";
+import { flagFor } from "../../constants/languages";
+import { CARD_DOMAIN, THEMES, TIERS } from "../../constants/theme";
+import type { Profile } from "../../types/store";
 
 interface ProfileCardViewProps {
   profile: Profile;
@@ -21,10 +21,15 @@ interface ProfileCardViewProps {
 
 const top3 = (values: string[]) => values.filter(Boolean).slice(0, 3);
 
-/** The saved, read-only view of a person's card — what shows once an
+/** The saved, read-only view of a person's card - what shows once an
  *  account exists. Edit / Share live as their own actions below the card,
  *  not inside its frame. */
-export function ProfileCardView({ profile, tag = '-----', onEdit, onShare }: ProfileCardViewProps) {
+export function ProfileCardView({
+  profile,
+  tag = "-----",
+  onEdit,
+  onShare,
+}: ProfileCardViewProps) {
   const t = THEMES[profile.theme] ?? THEMES.onyx;
   const tr = TIERS[profile.tier] ?? TIERS.standard;
   const { ink, sub } = t;
@@ -37,29 +42,54 @@ export function ProfileCardView({ profile, tag = '-----', onEdit, onShare }: Pro
   const address = `${CARD_DOMAIN}/${tag}`;
 
   const allRows: { kind: CatKind; label: string; value: string }[] = [
-    { kind: 'profession', label: professions.length > 1 ? 'Professions' : 'Profession', value: professions.join(' · ') },
-    { kind: 'skills', label: 'Skills', value: skills.join(' · ') },
-    { kind: 'interests', label: 'Interests', value: interests.join(' · ') },
-    { kind: 'location', label: locations.length > 1 ? 'Locations' : 'Location', value: locations.join(' · ') },
+    {
+      kind: "profession",
+      label: professions.length > 1 ? "Professions" : "Profession",
+      value: professions.join(" · "),
+    },
+    { kind: "skills", label: "Skills", value: skills.join(" · ") },
+    { kind: "interests", label: "Interests", value: interests.join(" · ") },
+    {
+      kind: "location",
+      label: locations.length > 1 ? "Locations" : "Location",
+      value: locations.join(" · "),
+    },
   ];
   const rows = allRows.filter((r) => r.value);
 
   return (
     <div className="mx-auto w-full max-w-[340px]">
-      <CardFrame tier={profile.tier} theme={t} corners className="relative px-4 pt-7">
+      <CardFrame
+        tier={profile.tier}
+        theme={t}
+        corners
+        className="relative px-4 pt-7"
+      >
         <span className="absolute top-[9px] right-[9px] z-[4]">
-          <Coin size={32} tier={profile.tier} />
+          <Logo size={32} />
         </span>
 
         <div className="flex justify-center">
-          <Portrait src={profile.photo} name={profile.name} size={94} tier={profile.tier} ink={tr.ink} />
+          <Portrait
+            src={profile.photo}
+            name={profile.name}
+            size={94}
+            tier={profile.tier}
+            ink={tr.ink}
+          />
         </div>
 
-        <div className="font-display mt-2.5 text-center text-[19px] tracking-[0.13em] uppercase" style={{ color: ink }}>
-          {profile.name || 'Your name'}
+        <div
+          className="font-display mt-2.5 text-center text-[19px] tracking-[0.13em] uppercase"
+          style={{ color: ink }}
+        >
+          {profile.name || "Your name"}
         </div>
         {professions[0] && (
-          <div className="mt-0.5 text-center text-[14.5px] italic" style={{ fontFamily: 'var(--font-serif)', color: sub }}>
+          <div
+            className="mt-0.5 text-center text-[14.5px] italic"
+            style={{ fontFamily: "var(--font-serif)", color: sub }}
+          >
             {professions[0]}
           </div>
         )}
@@ -71,12 +101,26 @@ export function ProfileCardView({ profile, tag = '-----', onEdit, onShare }: Pro
 
         <div>
           {rows.map((r) => (
-            <CardMeta key={r.kind} kind={r.kind} label={r.label} value={r.value} theme={t} />
+            <CardMeta
+              key={r.kind}
+              kind={r.kind}
+              label={r.label}
+              value={r.value}
+              theme={t}
+            />
           ))}
           {languages.length > 0 && (
             <div className="flex items-center gap-[9px] py-1.5">
               <CatIcon kind="languages" size={13} color={sub} />
-              <span className="ff-label flex-none" style={{ color: sub, width: 60, fontSize: 8, letterSpacing: '.16em' }}>
+              <span
+                className="ff-label flex-none"
+                style={{
+                  color: sub,
+                  width: 60,
+                  fontSize: 8,
+                  letterSpacing: ".16em",
+                }}
+              >
                 Languages
               </span>
               <span className="text-[15px] tracking-[2px]">

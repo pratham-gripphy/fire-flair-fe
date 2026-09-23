@@ -27,7 +27,7 @@
   --font-sans: ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
   /* the original design's own breakpoint for switching from the mobile
-     bottom nav to the desktop header nav — not one of Tailwind's defaults */
+     bottom nav to the desktop header nav - not one of Tailwind's defaults */
   --breakpoint-desk: 900px;
 }
 
@@ -130,6 +130,19 @@
 
   .ff-main {
     @apply mx-auto w-full max-w-[1180px] flex-1 px-4 pt-[18px] pb-[150px] desk:pb-12;
+  }
+
+  /* Every screen's outer wrapper - fills ff-main exactly, so page content
+     spans the same width as the header at every breakpoint. */
+  .ff-page {
+    @apply w-full;
+  }
+
+  /* The focused, single-column content within a page (forms, a single
+     card) - kept to a comfortable reading width and centred inside
+     ff-page, so it never shifts between screens that use it. */
+  .ff-page-narrow {
+    @apply mx-auto w-full max-w-[460px];
   }
 
   /* ---- framed panels (hero panels, info boxes) --------------------------- */
@@ -254,6 +267,89 @@
   }
   .ff-input:focus { border-color: var(--color-gold); outline: none; }
   .ff-input::placeholder { color: #A9A296; }
+
+  /* ---- pills / tags --------------------------------------------------------- */
+
+  .ff-pill {
+    @apply inline-flex items-center gap-[5px] border border-gold-dk/30 px-2.5 py-[3px] text-[10px] font-semibold tracking-[0.1em] whitespace-nowrap text-[#5E574C] uppercase;
+  }
+  .ff-pill.ok { @apply border-ok/40 text-ok; }
+  .ff-pill.warn { @apply border-warn/45 text-warn; }
+  .ff-pill.bad { @apply border-bad/35 text-bad; }
+  .ff-pill.gold { @apply border-gold bg-gold/10 text-[#6B5312]; }
+  .ff-dot { @apply inline-block h-1.5 w-1.5 rounded-full bg-current; }
+
+  /* ---- horizontal scrollers (feed rows, tile rows) --------------------------- */
+
+  .ff-hscroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 2px 16px 6px;
+    margin: 0 -16px;
+  }
+  .ff-hscroll::-webkit-scrollbar { display: none; }
+  .ff-hscroll.snapmand { scroll-snap-type: x mandatory; }
+  .ff-hitem { flex: 0 0 auto; scroll-snap-align: start; }
+
+  .ff-secthead {
+    @apply mb-2.5 flex items-center gap-2.5;
+  }
+  .ff-secthead .ff-h2 { font-size: 15px; }
+  .ff-secthead .line { @apply h-px flex-1 bg-gold-dk/30; }
+
+  .ff-tile {
+    border: 1px solid var(--color-gold-dk);
+    background: var(--color-paper);
+    padding: 11px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    text-align: left;
+  }
+  .ff-tile.dark { background: linear-gradient(168deg, #161618, #08080A); }
+
+  /* ---- bottom sheet (modals) ------------------------------------------------ */
+
+  .ff-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 8, 10, .62);
+    z-index: 60;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .ff-sheet {
+    width: 100%;
+    max-width: 560px;
+    background: var(--color-paper);
+    border-top: 1px solid var(--color-gold-dk);
+    max-height: 88vh;
+    overflow-y: auto;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    animation: ffup .22s ease-out;
+  }
+  .ff-sheet-head {
+    position: sticky;
+    top: 0;
+    background: var(--color-paper);
+    border-bottom: 1px solid rgba(126, 97, 29, .30);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 2;
+  }
+  @media (min-width: 700px) {
+    .ff-scrim { align-items: center; }
+    .ff-sheet { border: 1px solid var(--color-gold-dk); }
+  }
 }
 
 @keyframes ffup {

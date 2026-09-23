@@ -1,7 +1,7 @@
-import type { CSSProperties } from 'react';
-import { metalOf } from '../../constants/metal';
-import { useSimpleId } from '../../hooks/useSimpleId';
-import type { Tier } from '../../types/store';
+import type { CSSProperties } from "react";
+import { metalOf } from "../../constants/metal";
+import { useSimpleId } from "../../hooks/useSimpleId";
+import type { Tier } from "../../types/store";
 
 interface CoinProps {
   size?: number;
@@ -10,11 +10,16 @@ interface CoinProps {
   style?: CSSProperties;
 }
 
-const F_FORM = 'M0 0 H24.5 V7.4 H8.6 V20.6 H20.4 V28 H8.6 V48 H0 Z';
+const F_FORM = "M0 0 H24.5 V7.4 H8.6 V20.6 H20.4 V28 H8.6 V48 H0 Z";
 
-/** The FireFlair coin/emblem — a stylised "F" struck in the tier's metal.
+/** The FireFlair coin/emblem - a stylised "F" struck in the tier's metal.
  *  Used everywhere a person's tier needs to show: header, cards, XP bar. */
-export function Coin({ size = 40, tier = 'standard', flat = false, style }: CoinProps) {
+export function Coin({
+  size = 40,
+  tier = "standard",
+  flat = false,
+  style,
+}: CoinProps) {
   const m = metalOf(tier);
   const id = useSimpleId();
 
@@ -24,7 +29,7 @@ export function Coin({ size = 40, tier = 'standard', flat = false, style }: Coin
       height={size}
       viewBox="0 0 100 100"
       aria-hidden="true"
-      style={{ display: 'block', flex: 'none', ...style }}
+      style={{ display: "block", flex: "none", ...style }}
     >
       <defs>
         <linearGradient id={`e${id}`} x1="0.12" y1="0" x2="0.88" y2="1">
@@ -52,18 +57,49 @@ export function Coin({ size = 40, tier = 'standard', flat = false, style }: Coin
 
       <circle cx="50" cy="50" r="49" fill={`url(#e${id})`} />
       <circle cx="50" cy="50" r="43.5" fill={`url(#f${id})`} />
-      {!flat && <circle cx="50" cy="50" r="40.6" fill="none" stroke="#8C1526" strokeWidth="1.5" opacity=".8" />}
-      <circle cx="50" cy="50" r="37.4" fill="none" stroke={m.edge[1]} strokeWidth=".7" opacity=".5" />
+      {!flat && (
+        <circle
+          cx="50"
+          cy="50"
+          r="40.6"
+          fill="none"
+          stroke="#8C1526"
+          strokeWidth="1.5"
+          opacity=".8"
+        />
+      )}
+      <circle
+        cx="50"
+        cy="50"
+        r="37.4"
+        fill="none"
+        stroke={m.edge[1]}
+        strokeWidth=".7"
+        opacity=".5"
+      />
 
       <g transform="translate(33.66 29.84) skewX(-9) scale(0.84)">
         <path d={F_FORM} fill={`url(#t${id})`} />
         <g transform="translate(22 0)">
-          <path d={F_FORM} fill="none" stroke={m.face[1]} strokeWidth="3.4" strokeLinejoin="round" />
+          <path
+            d={F_FORM}
+            fill="none"
+            stroke={m.face[1]}
+            strokeWidth="3.4"
+            strokeLinejoin="round"
+          />
           <path d={F_FORM} fill={`url(#t${id})`} />
         </g>
       </g>
 
-      <path d="M16 32 A40 40 0 0 1 58 11" fill="none" stroke={`url(#s${id})`} strokeWidth="3" strokeLinecap="round" opacity=".55" />
+      <path
+        d="M16 32 A40 40 0 0 1 58 11"
+        fill="none"
+        stroke={`url(#s${id})`}
+        strokeWidth="3"
+        strokeLinecap="round"
+        opacity=".55"
+      />
     </svg>
   );
 }

@@ -6,7 +6,7 @@ export interface NavItem {
   mark: 'home' | 'network' | 'bookings' | 'profile' | null;
 }
 
-/** Primary tab bar. The "__ff" entry is not a tab — it's where the central
+/** Primary tab bar. The "__ff" entry is not a tab - it's where the central
  *  FireFlair coin button sits in the mobile bottom nav. */
 export const NAV: NavItem[] = [
   { key: 'home', label: 'Home', mark: 'home' },

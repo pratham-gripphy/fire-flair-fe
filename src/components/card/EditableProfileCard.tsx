@@ -5,7 +5,7 @@ import { Portrait } from '../common/Portrait';
 import { Level } from '../common/Level';
 import { CatIcon, type CatKind } from '../common/CatIcon';
 import { ChipEditor } from '../common/ChipEditor';
-import { Coin } from '../common/Coin';
+import { Logo } from '../common/Logo';
 import { Wordmark } from '../common/Wordmark';
 import { CARD_DOMAIN, THEMES, TIERS } from '../../constants/theme';
 import type { CardTheme, ProfileDraft, Tier } from '../../types/store';
@@ -41,7 +41,7 @@ function Row({ kind, label, iconColor, borderColor, children }: RowProps) {
   );
 }
 
-/** A FireFlair ID card you type straight onto — name, professions and the
+/** A FireFlair ID card you type straight onto - name, professions and the
  *  rest of the categories are all editable inline, on the card itself. */
 export function EditableProfileCard({ draft, onChange, themeKey = 'onyx', tag = '-----', tier = 'standard', level = 3 }: EditableProfileCardProps) {
   const t = THEMES[themeKey] ?? THEMES.onyx;
@@ -54,7 +54,7 @@ export function EditableProfileCard({ draft, onChange, themeKey = 'onyx', tag = 
   return (
     <CardFrame tier={tier} theme={t} corners className="relative mx-auto max-w-[340px] px-4 pt-7">
       <span className="absolute top-[9px] right-[9px] z-[4]">
-        <Coin size={32} tier={tier} />
+        <Logo size={32} />
       </span>
 
       <div className="mt-1 flex justify-center">
@@ -118,7 +118,7 @@ export function EditableProfileCard({ draft, onChange, themeKey = 'onyx', tag = 
       </Row>
 
       <div className="-mx-4 flex items-center gap-[9px] border-t px-4 py-2.5" style={{ background: t.dark ? 'rgba(0,0,0,.45)' : '#141416', borderColor: rule }}>
-        <Coin size={20} tier={tier} />
+        <Logo size={20} />
         <Wordmark size={12} />
         <span className="font-display text-gold-lt/80 ml-auto text-[9px] tracking-[0.06em]">
           {CARD_DOMAIN}/{tag}

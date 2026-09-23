@@ -6,7 +6,7 @@ interface MetalDef {
   hair: string;
 }
 
-/** Gradient stops for each coin/card tier — shared by every place the
+/** Gradient stops for each coin/card tier - shared by every place the
  *  FireFlair coin, emblem or card border is drawn, so a tier always
  *  renders in the same metal. */
 export const METAL: Record<Tier, MetalDef> = {

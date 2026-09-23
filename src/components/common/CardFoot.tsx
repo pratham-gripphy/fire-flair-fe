@@ -1,4 +1,4 @@
-import { Coin } from './Coin';
+import { Logo } from './Logo';
 import { Wordmark } from './Wordmark';
 import { metalOf } from '../../constants/metal';
 import type { CardThemeDef } from '../../constants/theme';
@@ -18,7 +18,7 @@ export function CardFoot({ tier, theme, address, tagline }: CardFootProps) {
       className="-mx-4 flex items-center gap-2 border-t px-4 py-2"
       style={{ background: theme.dark ? 'rgba(0,0,0,.5)' : 'rgba(14,14,16,.96)', borderColor: metalOf(tier).hair }}
     >
-      <Coin size={20} tier={tier} />
+      <Logo size={20} />
       <span className="leading-[1.1]">
         <Wordmark size={12} />
         {tagline && <span className="text-gold-lt/50 mt-0.5 block text-[6.5px] tracking-[0.22em] uppercase">{tagline}</span>}
