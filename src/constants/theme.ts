@@ -14,8 +14,12 @@ export interface CardThemeDef {
 export const THEMES: Record<CardTheme, CardThemeDef> = {
   onyx: { name: 'Onyx', bg: 'linear-gradient(168deg,#1A1A1D,#0C0C0E)', ink: '#F2F0EA', sub: '#B9B6AE', rule: 'rgba(240,238,232,.22)', dark: true, swatch: '#141416' },
   slate: { name: 'Forest', bg: 'linear-gradient(168deg,#173028,#0A1712)', ink: '#F1F4F0', sub: '#B7CDBF', rule: 'rgba(201,162,39,.28)', dark: true, swatch: '#12241D' },
+  burgundy: { name: 'Burgundy', bg: 'linear-gradient(168deg,#3E1519,#1C080B)', ink: '#F5EEEA', sub: '#D6BCB6', rule: 'rgba(201,162,39,.28)', dark: true, swatch: '#3A1418' },
   paper: { name: 'Paper', bg: 'linear-gradient(168deg,#FAFAF8,#ECEBE6)', ink: '#1A1A1C', sub: '#5E5D58', rule: 'rgba(26,26,28,.18)', dark: false, swatch: '#F2F1EC' },
 };
+
+/** The colours offered when building or editing your own card, in picker order. */
+export const CARD_COLOURS: CardTheme[] = ['onyx', 'burgundy', 'paper'];
 
 export interface CardTierDef {
   name: string;

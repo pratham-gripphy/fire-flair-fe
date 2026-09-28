@@ -6,12 +6,17 @@ import { Button } from "../../components/common/Button";
 import { Empty } from "../../components/common/Empty";
 import { Notice } from "../../components/common/Notice";
 import { Pill } from "../../components/common/Pill";
+import { CardColourPicker } from "../../components/card/CardColourPicker";
 import { EditableProfileCard } from "../../components/card/EditableProfileCard";
 import { ProfileCardView } from "../../components/card/ProfileCardView";
 import { AIProfileCompletion } from "../../components/profile/AIProfileCompletion";
 import { ProfileSections } from "../../components/profile/ProfileSections";
 import { TIERS } from "../../constants/theme";
-import type { Profile as ProfileState, ProfileDraft } from "../../types/store";
+import type {
+  CardTheme,
+  Profile as ProfileState,
+  ProfileDraft,
+} from "../../types/store";
 
 const draftOf = (profile: ProfileState): ProfileDraft => ({
   name: profile.name,
@@ -30,6 +35,7 @@ export function Profile() {
 
   const [editing, setEditing] = useState(false);
   const [editDraft, setEditDraft] = useState<ProfileDraft | null>(null);
+  const [editTheme, setEditTheme] = useState<CardTheme>(profile.theme);
   const [notice, setNotice] = useState<{
     tone: "ok" | "bad";
     text: string;
@@ -37,6 +43,7 @@ export function Profile() {
 
   const startEditing = () => {
     setEditDraft(draftOf(profile));
+    setEditTheme(profile.theme);
     setEditing(true);
   };
 
@@ -46,7 +53,12 @@ export function Profile() {
   };
 
   const saveEditing = () => {
-    if (editDraft) dispatch({ type: "PROFILE_PATCH", patch: editDraft });
+    if (editDraft) {
+      dispatch({
+        type: "PROFILE_PATCH",
+        patch: { ...editDraft, theme: editTheme },
+      });
+    }
     setEditDraft(null);
     setEditing(false);
     setNotice({ tone: "ok", text: "Card updated." });
@@ -109,10 +121,12 @@ export function Profile() {
             onChange={(patch) =>
               setEditDraft((d) => (d ? { ...d, ...patch } : d))
             }
-            themeKey={profile.theme}
+            themeKey={editTheme}
             tier={profile.tier}
             level={profile.level}
           />
+
+          <CardColourPicker value={editTheme} onChange={setEditTheme} />
 
           <div className="mx-auto mt-5 flex max-w-[340px] gap-3">
             <Button variant="ghost" className="flex-1" onClick={cancelEditing}>

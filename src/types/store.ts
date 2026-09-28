@@ -6,7 +6,7 @@ export type Tab = 'home' | 'network' | 'bookings' | 'profile';
 
 export type Tier = 'standard' | 'bronze' | 'silver' | 'gold';
 
-export type CardTheme = 'onyx' | 'slate' | 'paper';
+export type CardTheme = 'onyx' | 'slate' | 'burgundy' | 'paper';
 
 /** The fields typed directly onto the card while building it. */
 export interface ProfileDraft {

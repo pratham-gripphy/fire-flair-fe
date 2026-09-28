@@ -11,11 +11,26 @@ import { FieldError } from "../../components/common/FieldError";
 import { Notice } from "../../components/common/Notice";
 import { PhoneInput } from "../../components/common/PhoneInput";
 import { AICardCompletion } from "../../components/card/AICardCompletion";
+import { CardColourPicker } from "../../components/card/CardColourPicker";
 import { EditableProfileCard } from "../../components/card/EditableProfileCard";
 import { ProfileCardLandscape } from "../../components/card/ProfileCardLandscape";
 import type { ProfileDraft } from "../../types/store";
 import { isValidPhone, phoneErrorMessage, STATIC_OTP } from "../../utils/otp";
 import { DEFAULT_COUNTRY, type Country } from "../../constants/countries";
+
+/** Three-segment progress bar across the build flow: choose, build, verify. */
+function BuildSteps({ current }: { current: 1 | 2 | 3 }) {
+  return (
+    <div className="mb-4 grid grid-cols-3 gap-1.5" aria-label={`Step ${current} of 3`}>
+      {[1, 2, 3].map((n) => (
+        <span
+          key={n}
+          className={`h-0.5 ${n <= current ? "bg-gold-mid" : "bg-gold-mid/30"}`}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function Home() {
   const { state, dispatch } = useStore();
@@ -176,6 +191,7 @@ export function Home() {
     return (
       <div className="ff-page">
         <div className="ff-page-narrow">
+          <BuildSteps current={1} />
           <h1 className="ff-h1 text-center">Build your card</h1>
           <p className="ff-body mt-2 mb-4 text-center">
             How would you like to get started?
@@ -223,6 +239,7 @@ export function Home() {
     return (
       <div className="ff-page">
         <div className="ff-page-narrow">
+          <BuildSteps current={2} />
           <h1 className="ff-h1 text-center">Build your card</h1>
           <p className="ff-body mt-2 mb-4 text-center">
             Tell us about yourself and we&apos;ll fill in the card for you.
@@ -243,6 +260,7 @@ export function Home() {
   return (
     <div className="ff-page">
       <div className="ff-page-narrow">
+        <BuildSteps current={awaitingContact ? 3 : 2} />
         <h1 className="ff-h1 text-center">Build your card</h1>
         <p className="ff-body mt-2 mb-4 text-center">
           Type straight onto it. Add as many professions as you have - your card
@@ -257,25 +275,34 @@ export function Home() {
           level={profile.level}
         />
 
-        {awaitingSave && (
-          <div className="mx-auto mt-5 flex max-w-[420px] animate-[ffup_.22s_ease-out] gap-3">
+        <CardColourPicker
+          value={profile.theme}
+          onChange={(theme) => dispatch({ type: "PROFILE_PATCH", patch: { theme } })}
+        />
+
+        {!profile.cardSaved && (
+          <div className="mt-5">
             <Button
-              variant="ghost"
-              className="flex-1"
+              variant="primary wide"
+              disabled={!awaitingSave}
+              onClick={() => dispatch({ type: "SAVE_CARD" })}
+            >
+              Save my card
+            </Button>
+            {!cardReady && (
+              <p className="ff-body ff-muted mt-2 text-center text-xs">
+                Add your name and at least one profession to continue.
+              </p>
+            )}
+            <button
+              className="ff-body ff-muted mt-3 w-full text-center text-xs tracking-[0.1em] uppercase underline underline-offset-2"
               onClick={() => {
                 dispatch({ type: "RESET_CARD" });
                 setBuildMethod("choice");
               }}
             >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              className="flex-1"
-              onClick={() => dispatch({ type: "SAVE_CARD" })}
-            >
-              Save card
-            </Button>
+              Start over
+            </button>
           </div>
         )}
 
