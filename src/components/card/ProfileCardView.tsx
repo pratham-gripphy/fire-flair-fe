@@ -14,7 +14,6 @@ import type { Profile } from "../../types/store";
 
 interface ProfileCardViewProps {
   profile: Profile;
-  tag?: string;
   onEdit: () => void;
   onShare: () => void;
 }
@@ -26,7 +25,6 @@ const top3 = (values: string[]) => values.filter(Boolean).slice(0, 3);
  *  not inside its frame. */
 export function ProfileCardView({
   profile,
-  tag = "-----",
   onEdit,
   onShare,
 }: ProfileCardViewProps) {
@@ -39,7 +37,7 @@ export function ProfileCardView({
   const interests = top3(profile.interests);
   const locations = top3(profile.locations);
   const languages = profile.languages.slice(0, 5);
-  const address = `${CARD_DOMAIN}/${tag}`;
+  const address = `${CARD_DOMAIN}/${profile.name.slice(0, 3)}77`;
 
   const allRows: { kind: CatKind; label: string; value: string }[] = [
     {

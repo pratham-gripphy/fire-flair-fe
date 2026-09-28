@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { Award, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useStore } from "../../hooks/useStore";
 import { useGoTab } from "../../hooks/useGoTab";
 import { Button } from "../../components/common/Button";
 import { Empty } from "../../components/common/Empty";
 import { Notice } from "../../components/common/Notice";
 import { Pill } from "../../components/common/Pill";
-import { SectionHead } from "../../components/common/SectionHead";
 import { EditableProfileCard } from "../../components/card/EditableProfileCard";
 import { ProfileCardView } from "../../components/card/ProfileCardView";
 import { AIProfileCompletion } from "../../components/profile/AIProfileCompletion";
-import { QuestionCardsCollection } from "../../components/questions/QuestionCardsCollection";
+import { ProfileSections } from "../../components/profile/ProfileSections";
 import { TIERS } from "../../constants/theme";
 import type { Profile as ProfileState, ProfileDraft } from "../../types/store";
 
@@ -31,7 +30,10 @@ export function Profile() {
 
   const [editing, setEditing] = useState(false);
   const [editDraft, setEditDraft] = useState<ProfileDraft | null>(null);
-  const [notice, setNotice] = useState<{ tone: "ok" | "bad"; text: string } | null>(null);
+  const [notice, setNotice] = useState<{
+    tone: "ok" | "bad";
+    text: string;
+  } | null>(null);
 
   const startEditing = () => {
     setEditDraft(draftOf(profile));
@@ -54,7 +56,7 @@ export function Profile() {
     const shareData = {
       title: `${profile.name || "My"} FireFlair card`,
       text: `Check out ${profile.name.split(" ")[0] || "my"} FireFlair card.`,
-      url: window.location.href,
+      url: `${window.location.href}/${profile.name.slice(0, 3)}77}`,
     };
     if (navigator.share) {
       try {
@@ -112,7 +114,7 @@ export function Profile() {
             level={profile.level}
           />
 
-          <div className="mt-5 flex gap-3">
+          <div className="mx-auto mt-5 flex max-w-[340px] gap-3">
             <Button variant="ghost" className="flex-1" onClick={cancelEditing}>
               Cancel
             </Button>
@@ -157,13 +159,9 @@ export function Profile() {
         <AIProfileCompletion />
       </div>
 
-      <section className="mt-[22px]">
-        <SectionHead
-          icon={<Award size={15} className="text-gold-dk" strokeWidth={1.6} />}
-          title="Questions"
-        />
-        <QuestionCardsCollection />
-      </section>
+      <div className="ff-page-narrow">
+        <ProfileSections />
+      </div>
     </div>
   );
 }

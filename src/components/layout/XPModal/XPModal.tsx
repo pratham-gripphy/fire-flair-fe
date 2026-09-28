@@ -50,7 +50,7 @@ export function XPModal({ open, onClose }: XPModalProps) {
 
   const login = () => {
     if (otp.trim() !== STATIC_OTP) {
-      setOtpError("That code's wrong - try 1234.");
+      setOtpError("Invalid OTP");
       return;
     }
     setLoggedIn(true);

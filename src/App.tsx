@@ -4,6 +4,7 @@ import { AppProvider } from "./context/AppContext";
 import { Header } from "./components/layout/Header";
 import { BottomNav } from "./components/layout/BottomNav";
 import { XPModal } from "./components/layout/XPModal";
+import { Toast } from "./components/layout/Toast";
 import { Home } from "./pages/Home";
 import { Profile } from "./pages/Profile";
 import { Network } from "./pages/Network";
@@ -28,6 +29,7 @@ function App() {
           </Routes>
         </main>
         <BottomNav />
+        <Toast />
       </div>
     </AppProvider>
   );

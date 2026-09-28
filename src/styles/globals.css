@@ -165,11 +165,10 @@
     @apply w-full;
   }
 
-  /* The focused, single-column content within a page (forms, a single
-     card) - kept to a comfortable reading width and centred inside
-     ff-page, so it never shifts between screens that use it. */
+  /* Every page's content block - spans ff-page (and so the header) at
+     full width, so no screen ever looks narrower than the header above it. */
   .ff-page-narrow {
-    @apply mx-auto w-full max-w-[460px];
+    @apply w-full;
   }
 
   /* ---- framed panels (hero panels, info boxes) --------------------------- */
@@ -340,6 +339,39 @@
     text-align: left;
   }
   .ff-tile.dark { background: linear-gradient(168deg, #161618, #08080A); }
+
+  /* the light "add tile" card shell - trailing/empty-state tiles in an
+     HScroll (add a record, add people, …), distinct from the metal ff-deck */
+  .ff-card {
+    position: relative;
+    border: 1px solid var(--color-gold-dk);
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .16);
+  }
+  .ff-portrait { aspect-ratio: 5 / 7; }
+  .ff-addtile {
+    border: 1px dashed var(--color-gold-dk);
+    background: transparent;
+    display: grid;
+    place-items: center;
+  }
+  .ff-card.ff-addtile { box-shadow: none; }
+
+  /* the small rule-diamond-rule divider inside sheets */
+  .ff-diamond {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .ff-diamond .rule { @apply h-px flex-1 bg-gold-dk/30; }
+  .ff-diamond .gem {
+    width: 6px;
+    height: 6px;
+    flex: none;
+    transform: rotate(45deg);
+    background: var(--color-gold);
+  }
 
   /* ---- bottom sheet (modals) ------------------------------------------------ */
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight, ShieldCheck, Sparkles } from "lucide-react";
+import { ChevronRight, PenLine, ShieldCheck, Sparkles } from "lucide-react";
 import { useStore } from "../../hooks/useStore";
 import { useGoTab } from "../../hooks/useGoTab";
 import { Logo } from "../../components/common/Logo";
@@ -10,6 +10,7 @@ import { Field } from "../../components/common/Field";
 import { FieldError } from "../../components/common/FieldError";
 import { Notice } from "../../components/common/Notice";
 import { PhoneInput } from "../../components/common/PhoneInput";
+import { AICardCompletion } from "../../components/card/AICardCompletion";
 import { EditableProfileCard } from "../../components/card/EditableProfileCard";
 import { ProfileCardLandscape } from "../../components/card/ProfileCardLandscape";
 import type { ProfileDraft } from "../../types/store";
@@ -27,6 +28,11 @@ export function Home() {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState<string | null>(null);
   const [justActivated, setJustActivated] = useState(false);
+  // First-time builders pick AI or manual before the blank card appears;
+  // returning to a card already in progress skips straight past the choice.
+  const [buildMethod, setBuildMethod] = useState<"choice" | "ai" | "manual">(
+    () => (profile.name.trim() || profile.professions.length > 0 ? "manual" : "choice"),
+  );
 
   const updateDraft = (patch: Partial<ProfileDraft>) =>
     dispatch({ type: "PROFILE_PATCH", patch });
@@ -166,6 +172,74 @@ export function Home() {
   }
 
   // Building the first card, before the account exists.
+  if (buildMethod === "choice") {
+    return (
+      <div className="ff-page">
+        <div className="ff-page-narrow">
+          <h1 className="ff-h1 text-center">Build your card</h1>
+          <p className="ff-body mt-2 mb-4 text-center">
+            How would you like to get started?
+          </p>
+
+          <button
+            type="button"
+            className="ff-frame ff-lattice relative mb-3 flex w-full items-start gap-3 p-3.5 text-left"
+            onClick={() => setBuildMethod("ai")}
+          >
+            <Corners />
+            <Sparkles
+              size={20}
+              className="text-gold-mid mt-0.5 shrink-0"
+              strokeWidth={1.6}
+            />
+            <span>
+              <span className="font-display block text-sm">Let AI build it</span>
+              <span className="ff-body ff-muted mt-0.5 block text-xs">
+                Type, speak, or paste a bio - we&apos;ll draft your card and you
+                confirm before anything is saved.
+              </span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            className="ff-frame relative mb-3 flex w-full items-start gap-3 p-3.5 text-left"
+            onClick={() => setBuildMethod("manual")}
+          >
+            <PenLine size={20} className="text-ink/70 mt-0.5 shrink-0" strokeWidth={1.6} />
+            <span>
+              <span className="font-display block text-sm">Build it myself</span>
+              <span className="ff-body ff-muted mt-0.5 block text-xs">
+                Type straight onto the card, field by field.
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (buildMethod === "ai") {
+    return (
+      <div className="ff-page">
+        <div className="ff-page-narrow">
+          <h1 className="ff-h1 text-center">Build your card</h1>
+          <p className="ff-body mt-2 mb-4 text-center">
+            Tell us about yourself and we&apos;ll fill in the card for you.
+          </p>
+
+          <AICardCompletion
+            onApply={(patch) => {
+              updateDraft(patch);
+              setBuildMethod("manual");
+            }}
+            onSwitchToManual={() => setBuildMethod("manual")}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="ff-page">
       <div className="ff-page-narrow">
@@ -184,11 +258,14 @@ export function Home() {
         />
 
         {awaitingSave && (
-          <div className="mt-5 flex animate-[ffup_.22s_ease-out] gap-3">
+          <div className="mx-auto mt-5 flex max-w-[420px] animate-[ffup_.22s_ease-out] gap-3">
             <Button
               variant="ghost"
               className="flex-1"
-              onClick={() => dispatch({ type: "RESET_CARD" })}
+              onClick={() => {
+                dispatch({ type: "RESET_CARD" });
+                setBuildMethod("choice");
+              }}
             >
               Cancel
             </Button>
@@ -203,7 +280,7 @@ export function Home() {
         )}
 
         {awaitingContact && (
-          <div className="mt-6 animate-[ffup_.22s_ease-out]">
+          <div className="mx-auto mt-6 max-w-[420px] animate-[ffup_.22s_ease-out]">
             <div className="ff-rule mb-5" />
             <h2 className="ff-h2 text-center">Almost there</h2>
             <p className="ff-body ff-muted mt-1 mb-4 text-center">

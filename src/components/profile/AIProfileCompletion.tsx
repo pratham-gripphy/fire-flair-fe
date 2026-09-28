@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Award, Check, Mic } from "lucide-react";
 import { Logo } from "../common/Logo";
 import { Corners } from "../common/Corners";
@@ -6,37 +6,13 @@ import { Button } from "../common/Button";
 import { FieldError } from "../common/FieldError";
 import { Notice } from "../common/Notice";
 import { useStore } from "../../hooks/useStore";
+import { useSpeechToText } from "../../hooks/useSpeechToText";
 import {
   proposeAnswersFromText,
   SAMPLE_PROMPT,
   type AnswerProposal,
 } from "../../constants/proposeAnswers";
 import { QUESTIONS } from "../../constants/questions";
-
-interface SpeechRecognitionResultLike {
-  results: { [index: number]: { [index: number]: { transcript: string } } };
-}
-
-interface SpeechRecognitionLike extends EventTarget {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  onresult: ((event: SpeechRecognitionResultLike) => void) | null;
-  onend: (() => void) | null;
-  onerror: (() => void) | null;
-  start: () => void;
-  stop: () => void;
-}
-
-type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
-
-function getSpeechRecognitionCtor(): SpeechRecognitionCtor | null {
-  const w = window as unknown as {
-    SpeechRecognition?: SpeechRecognitionCtor;
-    webkitSpeechRecognition?: SpeechRecognitionCtor;
-  };
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
-}
 
 /** Reuses the FFAI visual language, purpose-built to feed the Question
  *  Cards below. Text, pasted CV, or (where the browser supports it) speech
@@ -48,10 +24,10 @@ export function AIProfileCompletion() {
   const [text, setText] = useState("");
   const [proposals, setProposals] = useState<AnswerProposal[] | null>(null);
   const [picked, setPicked] = useState<Record<string, boolean>>({});
-  const [listening, setListening] = useState(false);
-  const [micError, setMicError] = useState<string | null>(null);
   const [confirmedCount, setConfirmedCount] = useState<number | null>(null);
-  const recogRef = useRef<SpeechRecognitionLike | null>(null);
+  const { listening, error: micError, toggle: toggleMic } = useSpeechToText(
+    (transcript) => setText((x) => (x ? `${x} ` : "") + transcript),
+  );
 
   const questionFor = (qid: string) => QUESTIONS.find((q) => q.id === qid);
   const alreadyAnswered = (qid: string) => {
@@ -77,32 +53,6 @@ export function AIProfileCompletion() {
     setProposals(null);
     setText("");
     setPicked({});
-  };
-
-  const toggleMic = () => {
-    const Ctor = getSpeechRecognitionCtor();
-    if (!Ctor) {
-      setMicError("Voice input isn't available in this browser.");
-      return;
-    }
-    setMicError(null);
-    if (listening) {
-      recogRef.current?.stop();
-      return;
-    }
-    const recognition = new Ctor();
-    recognition.lang = "en-GB";
-    recognition.interimResults = false;
-    recognition.continuous = false;
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setText((x) => (x ? `${x} ` : "") + transcript);
-    };
-    recognition.onend = () => setListening(false);
-    recognition.onerror = () => setListening(false);
-    recogRef.current = recognition;
-    recognition.start();
-    setListening(true);
   };
 
   return (
