@@ -273,6 +273,20 @@ function reducer(state: AppState, action: AppAction): AppState {
         toast: `Asked ${action.request.fromName.split(" ")[0]} for a review`,
       };
 
+    case "CONNECT":
+      if (state.connections.some((c) => c.id === action.id)) return state;
+      return {
+        ...state,
+        connections: [...state.connections, { id: action.id }],
+        toast: `Connected with ${action.name.split(" ")[0]}`,
+      };
+    case "DISCONNECT":
+      return {
+        ...state,
+        connections: state.connections.filter((c) => c.id !== action.id),
+        toast: `Removed ${action.name.split(" ")[0]} from your network`,
+      };
+
     case "TOAST":
       return { ...state, toast: action.message };
 

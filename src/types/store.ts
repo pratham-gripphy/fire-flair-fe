@@ -131,4 +131,6 @@ export type AppAction =
   | { type: 'MEDIA_ADD'; item: MediaItem }
   | { type: 'MEDIA_DELETE'; id: string }
   | { type: 'REVIEW_REQUEST'; request: ReviewRequest }
+  | { type: 'CONNECT'; id: string; name: string }
+  | { type: 'DISCONNECT'; id: string; name: string }
   | { type: 'TOAST'; message: string | null };

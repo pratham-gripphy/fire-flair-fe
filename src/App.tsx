@@ -8,6 +8,7 @@ import { Toast } from "./components/layout/Toast";
 import { HomeSkeleton } from "./components/skeletons/HomeSkeleton";
 import { ProfileSkeleton } from "./components/skeletons/ProfileSkeleton";
 import { ComingSoonSkeleton } from "./components/skeletons/ComingSoonSkeleton";
+import { NetworkSkeleton } from "./components/skeletons/NetworkSkeleton";
 
 // Each screen is its own chunk; its own skeleton shimmers in its place while it loads.
 const Home = lazy(() =>
@@ -45,7 +46,7 @@ function App() {
             <Route
               path="/network"
               element={
-                <Suspense fallback={<ComingSoonSkeleton label="network" />}>
+                <Suspense fallback={<NetworkSkeleton />}>
                   <Network />
                 </Suspense>
               }
