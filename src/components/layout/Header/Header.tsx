@@ -1,7 +1,6 @@
 import { useStore } from "../../../hooks/useStore";
 import { useGoTab } from "../../../hooks/useGoTab";
 import { useActiveTab } from "../../../hooks/useActiveTab";
-import { xpProgress } from "../../../constants/xp";
 import { NAV } from "../../../constants/nav";
 import type { Tab } from "../../../types/store";
 import { Logo } from "../../common/Logo";
@@ -14,11 +13,11 @@ interface HeaderProps {
   onAdd?: () => void;
   /** Team only: share your FireFlair card. */
   onShare?: () => void;
-  /** Opens the XP area (coin button, and the XP progress strip). */
-  onXP?: () => void;
+  /** Opens the login sheet (logo button). */
+  onLogin?: () => void;
 }
 
-export function Header({ onAdd, onShare, onXP }: HeaderProps) {
+export function Header({ onAdd, onShare, onLogin }: HeaderProps) {
   const { state, dispatch } = useStore();
   const isTeam = state.role === "team";
   const isStaff = state.role === "staff";
@@ -26,8 +25,6 @@ export function Header({ onAdd, onShare, onXP }: HeaderProps) {
   const activeTab = useActiveTab();
 
   const basket = isStaff && state.selection.length > 0;
-  const xpInfo =
-    isTeam && state.profile.live ? xpProgress(state.profile.xp) : null;
 
   return (
     <header className="ff-lattice sticky top-0 z-40 border-b border-gold-dk bg-gradient-to-b from-onyx to-[#0A0A0B] text-cream">
@@ -55,8 +52,8 @@ export function Header({ onAdd, onShare, onXP }: HeaderProps) {
             ))}
             <button
               className="ml-2.5"
-              onClick={onXP}
-              aria-label="Your FireFlair XP"
+              onClick={onLogin}
+              aria-label="Log in"
             >
               <Logo size={30} />
             </button>
@@ -84,52 +81,27 @@ export function Header({ onAdd, onShare, onXP }: HeaderProps) {
         )}
       </div>
 
-      {/* Desktop companion row: XP + booking status - the same information
-          as the mobile bottom bars, laid out for the header on wide viewports. */}
-      {(xpInfo || basket) && (
+      {/* Desktop companion row: booking status - the same information as the
+          mobile bottom bar, laid out for the header on wide viewports. */}
+      {basket && (
         <div className="hidden desk:mx-auto desk:flex desk:max-w-[1180px] desk:items-center desk:gap-4 desk:border-t desk:border-gold/18 desk:px-4 desk:py-[9px]">
-          {xpInfo && (
+          <div className="flex items-center gap-2.5">
+            <span className="text-[11px] tracking-[0.1em] text-gold-lt uppercase">
+              {state.selection.length} selected
+            </span>
             <button
-              onClick={onXP}
-              className="flex min-w-0 flex-1 items-center gap-2.5"
-              aria-label="Your FireFlair XP"
+              onClick={() => dispatch({ type: "CLEAR_SELECTION" })}
+              className="text-[11px] tracking-[0.08em] text-cream/60 uppercase"
             >
-              <Logo size={24} />
-              <span className="min-w-0 flex-1">
-                <span className="mb-[3px] flex justify-between text-[10px] tracking-[0.1em] text-gold-lt uppercase">
-                  <span>{xpInfo.xp} XP</span>
-                  <span className="text-cream/55">
-                    {xpInfo.next ? `Next: ${xpInfo.next.label}` : "Top tier"}
-                  </span>
-                </span>
-                <span className="ff-xptrack h-[5px]">
-                  <span
-                    className="ff-xpfill"
-                    style={{ width: `${xpInfo.pct}%` }}
-                  />
-                </span>
-              </span>
+              Clear
             </button>
-          )}
-          {basket && (
-            <div className="flex items-center gap-2.5">
-              <span className="text-[11px] tracking-[0.1em] text-gold-lt uppercase">
-                {state.selection.length} selected
-              </span>
-              <button
-                onClick={() => dispatch({ type: "CLEAR_SELECTION" })}
-                className="text-[11px] tracking-[0.08em] text-cream/60 uppercase"
-              >
-                Clear
-              </button>
-              <button
-                onClick={() => goTab("home")}
-                className="border border-gold px-3 py-[7px] text-[10px] tracking-[0.1em] text-gold-lt uppercase"
-              >
-                Build team
-              </button>
-            </div>
-          )}
+            <button
+              onClick={() => goTab("home")}
+              className="border border-gold px-3 py-[7px] text-[10px] tracking-[0.1em] text-gold-lt uppercase"
+            >
+              Build team
+            </button>
+          </div>
         </div>
       )}
     </header>

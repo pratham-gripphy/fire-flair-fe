@@ -4,25 +4,19 @@ import { Sheet } from "../../common/Sheet";
 import { Field } from "../../common/Field";
 import { FieldError } from "../../common/FieldError";
 import { Button } from "../../common/Button";
-import { Pill } from "../../common/Pill";
-import { Corners } from "../../common/Corners";
-import { Coin } from "../../common/Coin";
 import { Notice } from "../../common/Notice";
 import { PhoneInput } from "../../common/PhoneInput";
-import { useStore } from "../../../hooks/useStore";
-import { xpProgress } from "../../../constants/xp";
 import { isValidPhone, phoneErrorMessage, STATIC_OTP } from "../../../utils/otp";
 import { DEFAULT_COUNTRY, type Country } from "../../../constants/countries";
 
-interface XPModalProps {
+interface LoginModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-/** Opened from the header's XP button. A phone + OTP login for an existing
- *  account sits above the XP preview, since XP itself isn't live yet. */
-export function XPModal({ open, onClose }: XPModalProps) {
-  const { state } = useStore();
+/** Opened from the header's logo button: phone + OTP login for an existing
+ *  account. */
+export function LoginModal({ open, onClose }: LoginModalProps) {
   const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
   const [phone, setPhone] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -30,7 +24,6 @@ export function XPModal({ open, onClose }: XPModalProps) {
   const [otpError, setOtpError] = useState<string | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const xpInfo = xpProgress(state.profile.xp);
   const phoneReady = isValidPhone(phone, country);
   const phoneError = phone.trim() ? phoneErrorMessage(phone, country) : null;
   const fullPhone = `${country.dial} ${phone.trim()}`;
@@ -57,7 +50,7 @@ export function XPModal({ open, onClose }: XPModalProps) {
   };
 
   return (
-    <Sheet open={open} onClose={onClose} title="FireFlair XP">
+    <Sheet open={open} onClose={onClose} title="Log in">
       <p className="ff-label mb-1.5">Log in to an existing account</p>
 
       {!otpSent ? (
@@ -125,28 +118,6 @@ export function XPModal({ open, onClose }: XPModalProps) {
           )}
         </>
       )}
-
-      <div className="ff-rule my-5" />
-
-      <div className="ff-frame p-5 text-center">
-        <Corners />
-        <div className="mb-2.5 flex justify-center">
-          <Coin size={40} tier={xpInfo.currentTier} />
-        </div>
-        <div className="mb-2.5 flex justify-center">
-          <Pill tone="warn">Coming soon</Pill>
-        </div>
-        <p className="ff-serif mb-2 text-[17px] text-[#4A443A]">
-          {xpInfo.xp} XP earned so far
-        </p>
-        <p className="ff-body ff-muted mb-0 text-[13px] leading-[1.5]">
-          XP is how FireFlair rewards you for building a great profile -
-          completing your card, answering questions, and staying active all
-          add up. It&apos;s not live yet, but once it is, your XP will unlock
-          Bronze, Silver and Gold tiers, badges on your card, and priority
-          visibility to teams browsing FireFlair.
-        </p>
-      </div>
     </Sheet>
   );
 }

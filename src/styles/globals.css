@@ -140,15 +140,6 @@
     @apply m-0 h-px border-0 bg-gold-dk/30;
   }
 
-  /* progress track, used by the header XP indicator and the XP screen */
-  .ff-xptrack {
-    @apply relative h-1.5 flex-1 overflow-hidden bg-white/10;
-  }
-
-  .ff-xpfill {
-    @apply absolute inset-y-0 left-0 h-full bg-gradient-to-r from-gold-dk to-gold transition-[width] duration-500 ease-out;
-  }
-
   /* ---- app shell layout -------------------------------------------------- */
 
   .ff-shell {

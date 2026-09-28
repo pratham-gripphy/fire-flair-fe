@@ -1,1 +1,0 @@
-export { XPModal } from './XPModal';

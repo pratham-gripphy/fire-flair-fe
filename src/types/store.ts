@@ -80,7 +80,6 @@ export interface Profile extends ProfileDraft {
   theme: CardTheme;
   level: number;
   live: boolean;
-  xp: number;
   phone: string;
   email: string;
   /** User has clicked "Build my card" - shows the editable card instead of the CTA. */

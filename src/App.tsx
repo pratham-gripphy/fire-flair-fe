@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
 import { Header } from "./components/layout/Header";
 import { BottomNav } from "./components/layout/BottomNav";
-import { XPModal } from "./components/layout/XPModal";
+import { LoginModal } from "./components/layout/LoginModal";
 import { Toast } from "./components/layout/Toast";
 import { Home } from "./pages/Home";
 import { Profile } from "./pages/Profile";
@@ -11,13 +11,13 @@ import { Network } from "./pages/Network";
 import { Bookings } from "./pages/Bookings";
 
 function App() {
-  const [xpOpen, setXpOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   return (
     <AppProvider>
       <div className="ff-shell">
-        <Header onXP={() => setXpOpen(true)} />
-        <XPModal open={xpOpen} onClose={() => setXpOpen(false)} />
+        <Header onLogin={() => setLoginOpen(true)} />
+        <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
         <main className="ff-main">
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />

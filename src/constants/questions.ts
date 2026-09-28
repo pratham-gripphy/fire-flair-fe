@@ -11,8 +11,6 @@ export interface Question {
   placeholder?: string;
 }
 
-/** +1 XP for answering a Question Card, once. */
-export const QUESTION_XP = 1;
 
 export const QUESTION_GROUPS: { key: QuestionGroupKey; label: string }[] = [
   { key: 'logistics', label: 'Equipment' },

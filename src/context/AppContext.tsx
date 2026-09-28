@@ -1,7 +1,6 @@
 import { useEffect, useReducer, type ReactNode } from "react";
 import type { AppAction, AppState, Profile } from "../types/store";
 import { AppContext } from "./app-context";
-import { QUESTION_XP } from "../constants/questions";
 import {
   CARD_CATEGORIES,
   allCategories,
@@ -27,7 +26,6 @@ const defaultProfile: Profile = {
   theme: "onyx",
   level: 3,
   live: false,
-  xp: 0,
   phone: "",
   email: "",
   started: false,
@@ -45,12 +43,12 @@ const defaultProfile: Profile = {
 function persistableProfile(profile: Profile) {
   const {
     name, photo, professions, skills, interests, locations, languages,
-    tier, theme, level, live, xp, phone, email, started, cardSaved,
+    tier, theme, level, live, phone, email, started, cardSaved,
     accountCreated, answers,
   } = profile;
   return {
     name, photo, professions, skills, interests, locations, languages,
-    tier, theme, level, live, xp, phone, email, started, cardSaved,
+    tier, theme, level, live, phone, email, started, cardSaved,
     accountCreated, answers,
   };
 }
@@ -151,14 +149,11 @@ function reducer(state: AppState, action: AppAction): AppState {
         },
       };
     case "ANSWER": {
-      const existing = state.profile.answers[action.qid];
-      const isNew = existing === undefined || existing === "";
       return {
         ...state,
         profile: {
           ...state.profile,
           answers: { ...state.profile.answers, [action.qid]: action.value },
-          xp: isNew ? state.profile.xp + QUESTION_XP : state.profile.xp,
         },
       };
     }

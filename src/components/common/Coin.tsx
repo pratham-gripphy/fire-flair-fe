@@ -13,7 +13,7 @@ interface CoinProps {
 const F_FORM = "M0 0 H24.5 V7.4 H8.6 V20.6 H20.4 V28 H8.6 V48 H0 Z";
 
 /** The FireFlair coin/emblem - a stylised "F" struck in the tier's metal.
- *  Used everywhere a person's tier needs to show: header, cards, XP bar. */
+ *  Used everywhere a person's tier needs to show: header, cards. */
 export function Coin({
   size = 40,
   tier = "standard",

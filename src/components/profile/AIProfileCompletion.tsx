@@ -74,8 +74,7 @@ export function AIProfileCompletion() {
         <>
           {confirmedCount !== null && (
             <Notice className="mb-2.5" onDismiss={() => setConfirmedCount(null)}>
-              {confirmedCount} question{confirmedCount === 1 ? "" : "s"} answered · +
-              {confirmedCount} XP
+              {confirmedCount} question{confirmedCount === 1 ? "" : "s"} answered
             </Notice>
           )}
 

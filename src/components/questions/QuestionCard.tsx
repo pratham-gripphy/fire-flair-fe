@@ -1,7 +1,6 @@
 import { Check, ChevronRight } from "lucide-react";
 import { CardFrame } from "../common/CardFrame";
 import { CatBadge } from "../common/CatBadge";
-import { Pill } from "../common/Pill";
 import {
   QUESTION_GROUPS,
   questionGroupColor,
@@ -46,16 +45,12 @@ export function QuestionCard({ q, answer, onClick }: QuestionCardProps) {
       >
         {groupLabel}
       </span>
-      {answered ? (
+      {answered && (
         <span
           className="absolute top-2 right-[9px] z-[4] flex"
           style={{ color: c.ink }}
         >
           <Check size={13} strokeWidth={2.4} />
-        </span>
-      ) : (
-        <span className="absolute top-[7px] right-2 z-[4]">
-          <Pill tone="warn">+1 XP</Pill>
         </span>
       )}
 

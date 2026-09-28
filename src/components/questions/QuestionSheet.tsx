@@ -21,7 +21,6 @@ interface TextAnswerFieldProps {
  *  fresh instance with its own draft state - no effect needed to resync it. */
 function TextAnswerField({ question, existing, onSave }: TextAnswerFieldProps) {
   const [value, setValue] = useState(existing ?? "");
-  const isNew = existing === undefined || existing === "";
 
   return (
     <>
@@ -39,7 +38,7 @@ function TextAnswerField({ question, existing, onSave }: TextAnswerFieldProps) {
         disabled={!value.trim()}
         onClick={() => onSave(value.trim())}
       >
-        {isNew ? "Save · +1 XP" : "Save answer"}
+        Save answer
       </Button>
     </>
   );
