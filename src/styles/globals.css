@@ -400,9 +400,35 @@
     .ff-scrim { align-items: center; }
     .ff-sheet { border: 1px solid var(--color-gold-dk); }
   }
+
+  /* ---- loading shimmer (skeleton placeholders) ------------------------------ */
+
+  /* a gilt sweep across a muted block - the one loading treatment used
+     app-wide. `.dark` is for placeholders sitting on onyx/card surfaces. */
+  .ff-shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(126, 97, 29, .11);
+  }
+  .ff-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(100deg, transparent 20%, rgba(255, 251, 238, .75) 50%, transparent 80%);
+    animation: ffshimmer 1.4s ease-in-out infinite;
+  }
+  .ff-shimmer.dark { background-color: rgba(201, 162, 39, .10); }
+  .ff-shimmer.dark::after {
+    background: linear-gradient(100deg, transparent 20%, rgba(234, 215, 156, .16) 50%, transparent 80%);
+  }
 }
 
 @keyframes ffup {
   from { transform: translateY(14px); opacity: .6; }
   to { transform: none; opacity: 1; }
+}
+
+@keyframes ffshimmer {
+  to { transform: translateX(100%); }
 }

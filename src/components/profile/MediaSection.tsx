@@ -5,6 +5,7 @@ import { SectionHead } from "../common/SectionHead";
 import { CategoryToggle } from "../common/CategoryToggle";
 import { Button } from "../common/Button";
 import { FieldError } from "../common/FieldError";
+import { Skeleton } from "../common/Skeleton";
 import { useStore } from "../../hooks/useStore";
 import { CARD_W } from "../../constants/cardWidths";
 import { MAX_MEDIA_BYTES, prettyBytes, readFileAsDataUrl } from "../../utils/files";
@@ -21,6 +22,8 @@ export function MediaSection() {
   const [adding, setAdding] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
+  // photos still being read off disk - each gets a shimmering tile
+  const [reading, setReading] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const addPhoto = async (file: File) => {
@@ -29,9 +32,16 @@ export function MediaSection() {
       return;
     }
     setError(null);
-    const dataUrl = await readFileAsDataUrl(file);
-    const item: MediaItem = { id: uid(), kind: "photo", name: file.name, dataUrl };
-    dispatch({ type: "MEDIA_ADD", item });
+    setReading((n) => n + 1);
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      const item: MediaItem = { id: uid(), kind: "photo", name: file.name, dataUrl };
+      dispatch({ type: "MEDIA_ADD", item });
+    } catch {
+      setError("Couldn't read that image - try another.");
+    } finally {
+      setReading((n) => n - 1);
+    }
   };
 
   const addVideo = () => {
@@ -95,7 +105,7 @@ export function MediaSection() {
             </div>
           )}
 
-          {media.length === 0 ? (
+          {media.length === 0 && reading === 0 ? (
             <button
               className="ff-card ff-addtile"
               style={{ width: "100%", padding: 18 }}
@@ -140,6 +150,17 @@ export function MediaSection() {
                       <span className="ff-body ff-muted truncate text-[10px]">{m.url}</span>
                     </a>
                   )}
+                </div>
+              ))}
+              {Array.from({ length: reading }, (_, i) => (
+                <div
+                  key={`reading-${i}`}
+                  role="status"
+                  aria-label="Loading photo"
+                  className="ff-tile"
+                  style={{ width: CARD_W.tile, minHeight: 110, padding: 0 }}
+                >
+                  <Skeleton height="100%" style={{ minHeight: 110 }} />
                 </div>
               ))}
             </HScroll>

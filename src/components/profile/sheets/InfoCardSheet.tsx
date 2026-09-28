@@ -5,6 +5,7 @@ import { Field } from "../../common/Field";
 import { Button } from "../../common/Button";
 import { FieldError } from "../../common/FieldError";
 import { Divider } from "../../common/Divider";
+import { Skeleton } from "../../common/Skeleton";
 import { useStore } from "../../../hooks/useStore";
 import { catHas, PROFICIENCY } from "../../../constants/categories";
 import { MAX_MEDIA_BYTES, prettyBytes, readFileAsDataUrl } from "../../../utils/files";
@@ -26,6 +27,9 @@ export function InfoCardSheet({ open, record, def, category, onClose, readOnly }
   const [draft, setDraft] = useState<InfoRecord | null>(record);
   const [mediaError, setMediaError] = useState<string | null>(null);
   const [docError, setDocError] = useState<string | null>(null);
+  // uploads still being read off disk - shown as shimmering placeholders
+  const [readingMedia, setReadingMedia] = useState(0);
+  const [readingDoc, setReadingDoc] = useState(false);
   const mediaRef = useRef<HTMLInputElement>(null);
   const docRef = useRef<HTMLInputElement>(null);
 
@@ -42,8 +46,15 @@ export function InfoCardSheet({ open, record, def, category, onClose, readOnly }
       return;
     }
     setMediaError(null);
-    const dataUrl = await readFileAsDataUrl(file);
-    patch({ media: [...draft.media, { id: uid(), name: file.name, dataUrl }] });
+    setReadingMedia((n) => n + 1);
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      patch({ media: [...draft.media, { id: uid(), name: file.name, dataUrl }] });
+    } catch {
+      setMediaError("Couldn't read that image - try another.");
+    } finally {
+      setReadingMedia((n) => n - 1);
+    }
   };
 
   const addDocument = async (file: File) => {
@@ -53,8 +64,15 @@ export function InfoCardSheet({ open, record, def, category, onClose, readOnly }
       setDocError("That file's too big to preview here - it's attached, but can't be reopened in this demo.");
       return;
     }
-    const dataUrl = await readFileAsDataUrl(file);
-    patch({ document: { name: file.name, size: file.size, type: file.type, dataUrl } });
+    setReadingDoc(true);
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      patch({ document: { name: file.name, size: file.size, type: file.type, dataUrl } });
+    } catch {
+      setDocError("Couldn't read that file - try another.");
+    } finally {
+      setReadingDoc(false);
+    }
   };
 
   const del = () => {
@@ -137,6 +155,11 @@ export function InfoCardSheet({ open, record, def, category, onClose, readOnly }
                 )}
               </div>
             ))}
+            {Array.from({ length: readingMedia }, (_, i) => (
+              <span key={`reading-${i}`} role="status" aria-label="Loading image">
+                <Skeleton width={84} height={84} />
+              </span>
+            ))}
           </div>
           {!readOnly && (
             <>
@@ -162,7 +185,19 @@ export function InfoCardSheet({ open, record, def, category, onClose, readOnly }
 
       {catHas(def, "document") && (
         <Field label="Document">
-          {draft.document ? (
+          {readingDoc ? (
+            <div
+              role="status"
+              aria-label="Loading document"
+              className="ff-frame mb-2 flex items-center gap-2.5 p-2.5"
+            >
+              <Skeleton width={36} height={36} />
+              <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+                <Skeleton width="60%" height={11} />
+                <Skeleton width="35%" height={9} />
+              </span>
+            </div>
+          ) : draft.document ? (
             <div className="ff-frame mb-2 flex items-center gap-2.5 p-2.5">
               <span
                 className="grid h-9 w-9 flex-none place-items-center"
