@@ -23,5 +23,10 @@ export function phoneErrorMessage(value: string, country: Country): string | nul
 export const isValidPhone = (value: string, country: Country) =>
   phoneErrorMessage(value, country) === null;
 
-/** Placeholder for a real SMS provider - every code is "1234" for now. */
-export const STATIC_OTP = "1234";
+export const OTP_LENGTH = 6;
+
+/** Seconds to wait before a new code can be requested. */
+export const OTP_RESEND_SECONDS = 60;
+
+/** Placeholder for a real SMS provider - every code is "123456" for now. */
+export const STATIC_OTP = "123456";

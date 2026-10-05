@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronRight, PenLine, ShieldCheck, Sparkles } from "lucide-react";
 import { useStore } from "../../hooks/useStore";
 import { useGoTab } from "../../hooks/useGoTab";
+import { formatCountdown, useResendTimer } from "../../hooks/useResendTimer";
 import { Logo } from "../../components/common/Logo";
 import { Wordmark } from "../../components/common/Wordmark";
 import { Corners } from "../../components/common/Corners";
@@ -10,12 +11,19 @@ import { Field } from "../../components/common/Field";
 import { FieldError } from "../../components/common/FieldError";
 import { Notice } from "../../components/common/Notice";
 import { PhoneInput } from "../../components/common/PhoneInput";
+import { OtpInput } from "../../components/common/OtpInput";
 import { AICardCompletion } from "../../components/card/AICardCompletion";
 import { CardColourPicker } from "../../components/card/CardColourPicker";
 import { EditableProfileCard } from "../../components/card/EditableProfileCard";
 import { ProfileCardLandscape } from "../../components/card/ProfileCardLandscape";
 import type { ProfileDraft } from "../../types/store";
-import { isValidPhone, phoneErrorMessage, STATIC_OTP } from "../../utils/otp";
+import {
+  isValidPhone,
+  OTP_LENGTH,
+  OTP_RESEND_SECONDS,
+  phoneErrorMessage,
+  STATIC_OTP,
+} from "../../utils/otp";
 import { DEFAULT_COUNTRY, type Country } from "../../constants/countries";
 
 /** Three-segment progress bar across the build flow: choose, build, verify. */
@@ -43,6 +51,8 @@ export function Home() {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState<string | null>(null);
   const [justActivated, setJustActivated] = useState(false);
+  const [resent, setResent] = useState(false);
+  const resend = useResendTimer(OTP_RESEND_SECONDS);
   // First-time builders pick AI or manual before the blank card appears;
   // returning to a card already in progress skips straight past the choice.
   const [buildMethod, setBuildMethod] = useState<"choice" | "ai" | "manual">(
@@ -66,17 +76,26 @@ export function Home() {
     setOtpSent(true);
     setOtp("");
     setOtpError(null);
+    setResent(false);
+    resend.restart();
+  };
+
+  const resendCode = () => {
+    sendCode();
+    setResent(true);
   };
 
   const changeNumber = () => {
     setOtpSent(false);
     setOtp("");
     setOtpError(null);
+    setResent(false);
+    resend.reset();
   };
 
   const verifyAndCreateAccount = () => {
-    if (otp.trim() !== STATIC_OTP) {
-      setOtpError("That code's wrong - try 1234.");
+    if (otp !== STATIC_OTP) {
+      setOtpError(`That code's wrong - try ${STATIC_OTP}.`);
       return;
     }
     setJustActivated(true);
@@ -346,31 +365,43 @@ export function Home() {
               <>
                 <Field
                   label="Verification code"
-                  hint={`Sent to ${fullPhone}. (Use 1234 for now.)`}
+                  hint={`${resent ? "New code sent" : "Sent"} to ${fullPhone}. (Use ${STATIC_OTP} for now.)`}
                 >
-                  <input
-                    className={`ff-input ${otpError ? "border-bad/50" : ""}`}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={4}
-                    placeholder="1234"
+                  <OtpInput
+                    length={OTP_LENGTH}
                     value={otp}
-                    onChange={(e) => {
-                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 4));
+                    onChange={(v) => {
+                      setOtp(v);
                       setOtpError(null);
                     }}
-                    aria-invalid={!!otpError}
+                    invalid={!!otpError}
+                    autoFocus
                   />
                   {otpError && <FieldError>{otpError}</FieldError>}
                 </Field>
 
                 <Button
                   variant="primary wide"
-                  disabled={otp.trim().length !== 4}
+                  disabled={otp.length !== OTP_LENGTH}
                   onClick={verifyAndCreateAccount}
                 >
                   <ShieldCheck size={15} /> Verify &amp; create account
                 </Button>
+
+                <p className="ff-body ff-muted mt-3 text-center text-xs">
+                  Didn&apos;t get it?{" "}
+                  {resend.canResend ? (
+                    <button
+                      type="button"
+                      className="text-gold-dk font-semibold underline underline-offset-2"
+                      onClick={resendCode}
+                    >
+                      Resend code
+                    </button>
+                  ) : (
+                    <span>Resend in {formatCountdown(resend.remaining)}</span>
+                  )}
+                </p>
 
                 <button
                   className="ff-body ff-muted mt-3 w-full text-center text-xs tracking-[0.1em] uppercase underline underline-offset-2"

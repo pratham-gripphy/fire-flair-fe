@@ -6,7 +6,15 @@ import { FieldError } from "../../common/FieldError";
 import { Button } from "../../common/Button";
 import { Notice } from "../../common/Notice";
 import { PhoneInput } from "../../common/PhoneInput";
-import { isValidPhone, phoneErrorMessage, STATIC_OTP } from "../../../utils/otp";
+import { OtpInput } from "../../common/OtpInput";
+import { formatCountdown, useResendTimer } from "../../../hooks/useResendTimer";
+import {
+  isValidPhone,
+  OTP_LENGTH,
+  OTP_RESEND_SECONDS,
+  phoneErrorMessage,
+  STATIC_OTP,
+} from "../../../utils/otp";
 import { DEFAULT_COUNTRY, type Country } from "../../../constants/countries";
 
 interface LoginModalProps {
@@ -23,6 +31,8 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState<string | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [resent, setResent] = useState(false);
+  const resend = useResendTimer(OTP_RESEND_SECONDS);
 
   const phoneReady = isValidPhone(phone, country);
   const phoneError = phone.trim() ? phoneErrorMessage(phone, country) : null;
@@ -32,6 +42,13 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     setOtpSent(true);
     setOtp("");
     setOtpError(null);
+    setResent(false);
+    resend.restart();
+  };
+
+  const resendCode = () => {
+    sendCode();
+    setResent(true);
   };
 
   const changeNumber = () => {
@@ -39,10 +56,12 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     setOtp("");
     setOtpError(null);
     setLoggedIn(false);
+    setResent(false);
+    resend.reset();
   };
 
   const login = () => {
-    if (otp.trim() !== STATIC_OTP) {
+    if (otp !== STATIC_OTP) {
       setOtpError("Invalid OTP");
       return;
     }
@@ -78,31 +97,43 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         <>
           <Field
             label="Verification code"
-            hint={`Sent to ${fullPhone}. (Use 1234 for now.)`}
+            hint={`${resent ? "New code sent" : "Sent"} to ${fullPhone}. (Use ${STATIC_OTP} for now.)`}
           >
-            <input
-              className={`ff-input ${otpError ? "border-bad/50" : ""}`}
-              type="text"
-              inputMode="numeric"
-              maxLength={4}
-              placeholder="1234"
+            <OtpInput
+              length={OTP_LENGTH}
               value={otp}
-              onChange={(e) => {
-                setOtp(e.target.value.replace(/\D/g, "").slice(0, 4));
+              onChange={(v) => {
+                setOtp(v);
                 setOtpError(null);
               }}
-              aria-invalid={!!otpError}
+              invalid={!!otpError}
+              autoFocus
             />
             {otpError && <FieldError>{otpError}</FieldError>}
           </Field>
 
           <Button
             variant="primary wide"
-            disabled={otp.trim().length !== 4}
+            disabled={otp.length !== OTP_LENGTH}
             onClick={login}
           >
             <LogIn size={15} /> Log in
           </Button>
+
+          <p className="ff-body ff-muted mt-3 text-center text-xs">
+            Didn&apos;t get it?{" "}
+            {resend.canResend ? (
+              <button
+                type="button"
+                className="text-gold-dk font-semibold underline underline-offset-2"
+                onClick={resendCode}
+              >
+                Resend code
+              </button>
+            ) : (
+              <span>Resend in {formatCountdown(resend.remaining)}</span>
+            )}
+          </p>
 
           <button
             className="ff-body ff-muted mt-3 w-full text-center text-xs tracking-[0.1em] uppercase underline underline-offset-2"

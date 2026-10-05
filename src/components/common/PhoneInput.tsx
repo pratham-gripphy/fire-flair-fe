@@ -15,6 +15,8 @@ interface PhoneInputProps {
 type FlagComponent = (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
 const FLAGS = FlagIcons as unknown as Record<string, FlagComponent>;
 
+console.log(FLAGS);
+
 /** An actual SVG flag rather than the flag emoji - Windows Chromium (and
  *  some headless setups) render the emoji as bare ISO-code text instead
  *  of a flag, so this is the only reliable cross-platform option. */
@@ -29,7 +31,9 @@ function matchesQuery(c: Country, query: string): boolean {
   if (c.name.toLowerCase().includes(query)) return true;
   if (c.code.toLowerCase().includes(query)) return true;
   const needleDigits = query.replace(/\D/g, "");
-  return needleDigits.length > 0 && c.dial.replace("+", "").includes(needleDigits);
+  return (
+    needleDigits.length > 0 && c.dial.replace("+", "").includes(needleDigits)
+  );
 }
 
 /** A phone field with a dial-code prefix - tap the flag to pick a different
@@ -96,7 +100,10 @@ export function PhoneInput({
             invalid ? "border-bad/50" : "border-gold-dk/30"
           }`}
         >
-          <Flag code={country.code} className="aspect-[3/2] w-5 shrink-0 rounded-[1px]" />
+          <Flag
+            code={country.code}
+            className="aspect-[3/2] w-5 shrink-0 rounded-[1px]"
+          />
           <span>{country.dial}</span>
           <ChevronDown
             size={13}
@@ -147,7 +154,10 @@ export function PhoneInput({
                       c.code === country.code ? "bg-gold/15" : ""
                     }`}
                   >
-                    <Flag code={c.code} className="aspect-[3/2] w-5 shrink-0 rounded-[1px]" />
+                    <Flag
+                      code={c.code}
+                      className="aspect-[3/2] w-5 shrink-0 rounded-[1px]"
+                    />
                     <span className="flex-1 truncate">{c.name}</span>
                     <span className="text-gold-dk shrink-0">{c.dial}</span>
                   </button>
